@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class ExtrairDadosPlanilha {
 
-    public Map<String, List<Dados>> extrairETratarDados(String caminhoDoArquivo) {
+    public Map<String, List<Dados>> extrairTratarDados(String caminhoDoArquivo) {
         try {
             System.out.println("Iniciando processo de extração para o arquivo: " + caminhoDoArquivo);
             Map<String, List<List<String>>> dados_brutos = this.extrairDadosBrutos(caminhoDoArquivo);

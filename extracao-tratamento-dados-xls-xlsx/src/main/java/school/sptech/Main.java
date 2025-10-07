@@ -12,7 +12,7 @@ public class Main {
 
         System.out.println("Iniciando o programa...");
 
-        Map<String, List<Dados>> dadosProntos = extrator.extrairETratarDados(caminhoDoArquivo);
+        Map<String, List<Dados>> dadosProntos = extrator.extrairTratarDados(caminhoDoArquivo);
 
         if (dadosProntos != null) {
             System.out.println("\n--- PROCESSO CONCLUÍDO COM SUCESSO ---");
@@ -21,7 +21,7 @@ public class Main {
             List<String> nomesDasAbas = new ArrayList<>(dadosProntos.keySet());
             for (int i = 0; i < nomesDasAbas.size(); i++) {
                 String nomeAba = nomesDasAbas.get(i);
-                int quantidade = dadosProntos.get(nomeAba).size();
+                Integer quantidade = dadosProntos.get(nomeAba).size();
                 System.out.println("  - Aba '" + nomeAba + "' gerou " + quantidade + " registros válidos.");
             }
 
