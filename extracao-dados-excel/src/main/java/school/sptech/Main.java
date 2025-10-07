@@ -7,7 +7,7 @@ import java.util.Map;
 public class Main {
 
     public static void main(String[] args) {
-        ExtratorDePlanilha extrator = new ExtratorDePlanilha();
+        ExtrairDadosPlanilha extrator = new ExtrairDadosPlanilha();
         String caminhoDoArquivo = "C:/Users/vvent/Downloads/airwise-base-de-dados-2024.xlsx";
 
         System.out.println("Iniciando o programa...");

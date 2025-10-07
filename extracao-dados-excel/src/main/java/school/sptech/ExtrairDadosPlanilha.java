@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ExtratorDePlanilha {
+public class ExtrairDadosPlanilha {
 
     public Map<String, List<Dados>> extrairETratarDados(String caminhoDoArquivo) {
         try {
