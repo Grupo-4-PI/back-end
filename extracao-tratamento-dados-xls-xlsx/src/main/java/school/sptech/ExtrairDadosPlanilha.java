@@ -1,3 +1,4 @@
+// ExtrairDadosPlanilha.java (VERSÃO REFATORADA)
 package school.sptech;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -5,9 +6,8 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream; // ALTERADO: Não precisamos mais de File e FileInputStream
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,15 +15,17 @@ import java.util.Map;
 
 public class ExtrairDadosPlanilha {
 
-    public Map<String, List<Dados>> extrairTratarDados(String caminhoDoArquivo) {
+    // ALTERADO: A assinatura do método agora recebe o InputStream e o nome do arquivo
+    public Map<String, List<Dados>> extrairTratarDados(InputStream fileInputStream, String fileName) {
         try {
-            System.out.println("Iniciando processo de extração para o arquivo: " + caminhoDoArquivo);
-            Map<String, List<List<String>>> dados_brutos = this.extrairDadosBrutos(caminhoDoArquivo);
+            System.out.println("Iniciando processo de extração para o arquivo: " + fileName);
+            // ALTERADO: Passamos os novos parâmetros para o método interno
+            Map<String, List<List<String>>> dados_brutos = this.extrairDadosBrutos(fileInputStream, fileName);
 
             if (dados_brutos == null) return null;
 
+            // O RESTANTE DESTE MÉTODO PERMANECE EXATAMENTE IGUAL
             System.out.println("Extração concluída. Iniciando tratamento dos dados...");
-
             TratamentoDados tratador = new TratamentoDados();
             Map<String, List<Dados>> dados_aba_tratados = new HashMap<>();
 
@@ -67,46 +69,48 @@ public class ExtrairDadosPlanilha {
         }
     }
 
-    private Map<String, List<List<String>>> extrairDadosBrutos(String caminhoDoArquivo) throws IOException {
-        IOUtils.setByteArrayMaxOverride(500 * 1024 * 1024);
+    // ALTERADO: A assinatura do método para receber o InputStream e o nome do arquivo
+    private Map<String, List<List<String>>> extrairDadosBrutos(InputStream fileInputStream, String fileName) throws IOException {
+        IOUtils.setByteArrayMaxOverride(500 * 1024 * 1024); // Mantemos a configuração
 
-        File arquivo_ler = new File(caminhoDoArquivo);
         Map<String, List<List<String>>> todos_dados_planilha = new HashMap<>();
-        String nome_arquivo = arquivo_ler.getName();
 
-        try (FileInputStream fluxo_leitura = new FileInputStream(arquivo_ler)) {
-            Workbook pasta_trabalho;
-            if (nome_arquivo.endsWith(".xls")) {
-                pasta_trabalho = new HSSFWorkbook(fluxo_leitura);
-            } else if (nome_arquivo.endsWith(".xlsx")) {
-                pasta_trabalho = new XSSFWorkbook(fluxo_leitura);
-            } else {
-                throw new IllegalArgumentException("Formato de arquivo não suportado: " + nome_arquivo);
-            }
+        // REMOVIDO: Não precisamos mais criar um objeto File ou um FileInputStream
+        // File arquivo_ler = new File(caminhoDoArquivo);
+        // try (FileInputStream fluxo_leitura = new FileInputStream(arquivo_ler)) { ... }
 
-            DataFormatter data_formatter = new DataFormatter();
-            try (pasta_trabalho) {
-                for (Integer indice_aba = 0; indice_aba < pasta_trabalho.getNumberOfSheets(); indice_aba++) {
-                    Sheet aba = pasta_trabalho.getSheetAt(indice_aba);
-                    List<List<String>> dados_aba = new ArrayList<>();
-                    for (Integer indice_linha = aba.getFirstRowNum(); indice_linha <= aba.getLastRowNum(); indice_linha++) {
-                        Row linha = aba.getRow(indice_linha);
-                        if (linha != null) {
-                            List<String> dados_linha = new ArrayList<>();
-                            for (int i = 0; i < 30; i++) {
-                                Cell celula = linha.getCell(i, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+        // O InputStream já é recebido pronto. O try-with-resources ficará na classe Main.
+        Workbook pasta_trabalho;
+        if (fileName.toLowerCase().endsWith(".xls")) {
+            pasta_trabalho = new HSSFWorkbook(fileInputStream);
+        } else if (fileName.toLowerCase().endsWith(".xlsx")) {
+            pasta_trabalho = new XSSFWorkbook(fileInputStream);
+        } else {
+            throw new IllegalArgumentException("Formato de arquivo não suportado: " + fileName);
+        }
 
-                                if (celula == null){
-                                    dados_linha.add(null);
-                                } else {
-                                    dados_linha.add(data_formatter.formatCellValue(celula).trim());
-                                }
+        DataFormatter data_formatter = new DataFormatter();
+        try (pasta_trabalho) {
+            for (Integer indice_aba = 0; indice_aba < pasta_trabalho.getNumberOfSheets(); indice_aba++) {
+                Sheet aba = pasta_trabalho.getSheetAt(indice_aba);
+                List<List<String>> dados_aba = new ArrayList<>();
+                for (Integer indice_linha = aba.getFirstRowNum(); indice_linha <= aba.getLastRowNum(); indice_linha++) {
+                    Row linha = aba.getRow(indice_linha);
+                    if (linha != null) {
+                        List<String> dados_linha = new ArrayList<>();
+                        for (int i = 0; i < 30; i++) { // Lógica para ler 30 colunas
+                            Cell celula = linha.getCell(i, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+
+                            if (celula == null){
+                                dados_linha.add(null);
+                            } else {
+                                dados_linha.add(data_formatter.formatCellValue(celula).trim());
                             }
-                            dados_aba.add(dados_linha);
                         }
+                        dados_aba.add(dados_linha);
                     }
-                    todos_dados_planilha.put(aba.getSheetName(), dados_aba);
                 }
+                todos_dados_planilha.put(aba.getSheetName(), dados_aba);
             }
         }
         return todos_dados_planilha;
