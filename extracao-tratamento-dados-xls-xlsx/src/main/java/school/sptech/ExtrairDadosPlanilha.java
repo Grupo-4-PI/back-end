@@ -1,4 +1,3 @@
-// ExtrairDadosPlanilha.java (VERSÃO REFATORADA)
 package school.sptech;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -7,7 +6,7 @@ import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.IOException;
-import java.io.InputStream; // ALTERADO: Não precisamos mais de File e FileInputStream
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,16 +14,13 @@ import java.util.Map;
 
 public class ExtrairDadosPlanilha {
 
-    // ALTERADO: A assinatura do método agora recebe o InputStream e o nome do arquivo
     public Map<String, List<Dados>> extrairTratarDados(InputStream fileInputStream, String fileName) {
         try {
             System.out.println("Iniciando processo de extração para o arquivo: " + fileName);
-            // ALTERADO: Passamos os novos parâmetros para o método interno
             Map<String, List<List<String>>> dados_brutos = this.extrairDadosBrutos(fileInputStream, fileName);
 
             if (dados_brutos == null) return null;
 
-            // O RESTANTE DESTE MÉTODO PERMANECE EXATAMENTE IGUAL
             System.out.println("Extração concluída. Iniciando tratamento dos dados...");
             TratamentoDados tratador = new TratamentoDados();
             Map<String, List<Dados>> dados_aba_tratados = new HashMap<>();
@@ -69,17 +65,11 @@ public class ExtrairDadosPlanilha {
         }
     }
 
-    // ALTERADO: A assinatura do método para receber o InputStream e o nome do arquivo
     private Map<String, List<List<String>>> extrairDadosBrutos(InputStream fileInputStream, String fileName) throws IOException {
-        IOUtils.setByteArrayMaxOverride(500 * 1024 * 1024); // Mantemos a configuração
+        IOUtils.setByteArrayMaxOverride(500 * 1024 * 1024);
 
         Map<String, List<List<String>>> todos_dados_planilha = new HashMap<>();
 
-        // REMOVIDO: Não precisamos mais criar um objeto File ou um FileInputStream
-        // File arquivo_ler = new File(caminhoDoArquivo);
-        // try (FileInputStream fluxo_leitura = new FileInputStream(arquivo_ler)) { ... }
-
-        // O InputStream já é recebido pronto. O try-with-resources ficará na classe Main.
         Workbook pasta_trabalho;
         if (fileName.toLowerCase().endsWith(".xls")) {
             pasta_trabalho = new HSSFWorkbook(fileInputStream);
@@ -98,7 +88,7 @@ public class ExtrairDadosPlanilha {
                     Row linha = aba.getRow(indice_linha);
                     if (linha != null) {
                         List<String> dados_linha = new ArrayList<>();
-                        for (int i = 0; i < 30; i++) { // Lógica para ler 30 colunas
+                        for (int i = 0; i < 30; i++) {
                             Cell celula = linha.getCell(i, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
 
                             if (celula == null){
