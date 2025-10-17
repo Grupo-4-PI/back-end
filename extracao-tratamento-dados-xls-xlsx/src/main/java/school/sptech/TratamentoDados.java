@@ -1,5 +1,7 @@
 package school.sptech;
 
+import school.sptech.LogsExtracao.Log;
+
 import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -138,6 +140,7 @@ public class TratamentoDados {
             return linha_dados_tratados;
 
         } catch (Exception e) {
+            Log.erro("ERRO CRÍTICO no processo de tratamento de dados: " + e.getMessage());
             return null;
         }
     }

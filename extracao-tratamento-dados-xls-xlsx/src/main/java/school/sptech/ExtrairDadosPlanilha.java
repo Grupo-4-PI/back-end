@@ -12,23 +12,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import school.sptech.LogsExtracao.Log;
+
 public class ExtrairDadosPlanilha {
 
     public Map<String, List<Dados>> extrairTratarDados(InputStream fileInputStream, String fileName) {
         try {
-            System.out.println("Iniciando processo de extração para o arquivo: " + fileName);
+            Log.info("Iniciando processo de extração para o arquivo: " + fileName);
             Map<String, List<List<String>>> dados_brutos = this.extrairDadosBrutos(fileInputStream, fileName);
 
             if (dados_brutos == null) return null;
 
-            System.out.println("Extração concluída. Iniciando tratamento dos dados...");
+            Log.info("Extração concluída. Iniciando tratamento dos dados...");
             TratamentoDados tratador = new TratamentoDados();
             Map<String, List<Dados>> dados_aba_tratados = new HashMap<>();
 
             for (String nome_aba : dados_brutos.keySet()) {
                 List<List<String>> dados_aba_brutos = dados_brutos.get(nome_aba);
                 List<Dados> dados_tratados = new ArrayList<>();
-                System.out.println("Processando aba '" + nome_aba + "'...");
+                Log.info("Processando aba '" + nome_aba + "'...");
 
                 Integer indice_cabecalho = -1;
                 for (int i = 0; i < dados_aba_brutos.size(); i++) {
@@ -40,17 +42,29 @@ public class ExtrairDadosPlanilha {
                 }
 
                 if (indice_cabecalho == -1) {
-                    System.err.println("AVISO: Não foi possível encontrar a linha de cabeçalho na aba '" + nome_aba + "'. Aba ignorada.");
+                    Log.erro("AVISO: Não foi possível encontrar a linha de cabeçalho na aba '" + nome_aba + "'. Aba ignorada.");
                     continue;
                 }
 
                 for (int i = indice_cabecalho + 1; i < dados_aba_brutos.size(); i++) {
                     Integer numero_linha_planilha = i + 1;
                     List<String> linhaBruta = dados_aba_brutos.get(i);
-                    Dados dados = tratador.tratarLinha(linhaBruta, numero_linha_planilha);
 
-                    if (dados != null) {
-                        dados_tratados.add(dados);
+                    try {
+                        Dados dados = tratador.tratarLinha(linhaBruta, numero_linha_planilha);
+
+                        if (dados != null) {
+                            dados_tratados.add(dados);
+
+                            if (i % 100 == 0) {
+                                Log.sucesso("Linha(s) " + numero_linha_planilha + " tratada(s) com sucesso.");
+                            }
+                        } else {
+                            // Log de erro por linha inválida
+                            Log.erro("Falha ao tratar linha " + numero_linha_planilha + ".");
+                        }
+                    } catch (Exception e) {
+                        Log.erro("Erro inesperado na linha " + numero_linha_planilha + ": " + e.getMessage());
                     }
                 }
                 System.out.println("Aba '" + nome_aba + "' processada. " + dados_tratados.size() + " registros válidos encontrados.");
@@ -59,7 +73,7 @@ public class ExtrairDadosPlanilha {
             return dados_aba_tratados;
 
         } catch (Exception e) {
-            System.err.println("ERRO CRÍTICO no processo de extração e tratamento: " + e.getMessage());
+            Log.erro("ERRO CRÍTICO no processo de extração e tratamento: " + e.getMessage());
             e.printStackTrace();
             return null;
         }
