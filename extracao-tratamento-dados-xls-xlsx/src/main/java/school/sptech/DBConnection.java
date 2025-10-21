@@ -2,11 +2,9 @@ package school.sptech;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
-import java.util.List;
 
 public class DBConnection {
 
@@ -29,10 +27,48 @@ public class DBConnection {
         return new JdbcTemplate(dataSource);
     }
 
+
+
     public void insercaoDados(Dados dados) {
         JdbcTemplate jdbc = getConnection();
-        String sql = "INSERT INTO reclamacoes VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        jdbc.update(sql, dados.getUf(), dados.getCidade(), dados.getDataAbertura(), dados.getDataHoraResposta(), dados.getDataFinalizacao(), dados.getTempoResposta(), dados.getNomeFantasia(), dados.getAssunto(), dados.getGrupoProblema(), dados.getProblema(), dados.getFormaContrato(), dados.getRespondida(), dados.getSituacao(), dados.getAvaliacao(), dados.getNotaConsumidor(), dados.getCodigoANAC());
+        String sqlBuscaId = "SELECT idEmpresa FROM empresa WHERE nomeFantasia = ?";
+        Integer idEmpresa;
+
+        try {
+            idEmpresa = jdbc.queryForObject(sqlBuscaId, Integer.class, dados.getNomeFantasia());
+        } catch (EmptyResultDataAccessException e) {
+            System.err.println("ERRO: Empresa não encontrada no banco de dados: " + dados.getNomeFantasia());
+            return;
+        }
+
+
+        String sqlInsert = """
+        INSERT INTO reclamacoes (
+            idEmpresa, uf, cidade, dataAbertura, dataHoraResposta, dataFinalizacao, 
+            tempoResposta, nomeFantasia, assunto, grupoProblema, problema, 
+            formaContrato, respondida, situacao, avaliacao, notaConsumidor, codigoANAC
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """;
+
+        jdbc.update(sqlInsert,
+                dados.getUf(),
+                dados.getCidade(),
+                dados.getDataAbertura(),
+                dados.getDataHoraResposta(),
+                dados.getDataFinalizacao(),
+                dados.getTempoResposta(),
+                dados.getNomeFantasia(),
+                dados.getAssunto(),
+                dados.getGrupoProblema(),
+                dados.getProblema(),
+                dados.getFormaContrato(),
+                dados.getRespondida(),
+                dados.getSituacao(),
+                dados.getAvaliacao(),
+                dados.getNotaConsumidor(),
+                dados.getCodigoANAC(),
+                idEmpresa
+        );
     }
 }
