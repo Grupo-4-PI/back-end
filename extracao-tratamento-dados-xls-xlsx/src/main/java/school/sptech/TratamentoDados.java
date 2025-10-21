@@ -136,6 +136,9 @@ public class TratamentoDados {
                     notaConsumidor,
                     codigoANAC
             );
+            DBConnection dbConnectionProvider = new DBConnection();
+
+            dbConnectionProvider.insercaoDados(linha_dados_tratados);
 
             return linha_dados_tratados;
 
