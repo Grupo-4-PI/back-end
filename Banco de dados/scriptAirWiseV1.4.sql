@@ -1,6 +1,5 @@
+create database airwise;
 use airwise;
-
-drop table usuario;
 
 CREATE TABLE empresa (
     idEmpresa INT AUTO_INCREMENT PRIMARY KEY,
@@ -43,7 +42,7 @@ CREATE TABLE chaveDeAcesso (
 );
 
 CREATE TABLE reclamacoes (
-    id SERIAL PRIMARY KEY, 
+    id INT PRIMARY KEY AUTO_INCREMENT, 
     uf VARCHAR(2),
     cidade VARCHAR(255),
     data_abertura DATE,
@@ -59,17 +58,10 @@ CREATE TABLE reclamacoes (
     situacao VARCHAR(100),
     avaliacao VARCHAR(100),
     nota_consumidor INT,
-    codigo_anac VARCHAR(50)
+    codigo_anac VARCHAR(50),
+    fkEmpresa int,
+    FOREIGN KEY (fkEmpresa) REFERENCES empresa(idEmpresa)
 );
-
-CREATE TABLE registroLog (
-idLog INT PRIMARY KEY AUTO_INCREMENT,
-info VARCHAR(500),
-erro VARCHAR(500),
-statusLog BOOLEAN
-);
-
-truncate table empresa;
 
 INSERT INTO empresa (cnpj, nomeFantasia, razaoSocial) VALUES
 ('99888777000166', 'gol', 'Gol linhas Aéreas');
@@ -91,7 +83,8 @@ INSERT INTO chaveDeAcesso (fkEmpresa, status, codigo, dataCriacao) VALUES
 
 select * from usuario;
 
+Select * from reclamacoes;
+
+Select * from empresa;
+
 select * from usuario where senha = md5('senhaForte123');
-
-
--- coidigo
