@@ -42,10 +42,37 @@ CREATE TABLE chaveDeAcesso (
     FOREIGN KEY (fkEmpresa) REFERENCES empresa(idEmpresa)
 );
 
+CREATE TABLE reclamacoes (
+    id SERIAL PRIMARY KEY, 
+    uf VARCHAR(2),
+    cidade VARCHAR(255),
+    data_abertura DATE,
+    data_hora_resposta TIMESTAMP,
+    data_finalizacao DATE,
+    tempo_resposta INT,
+    nome_fantasia VARCHAR(255),
+    assunto VARCHAR(255),
+    grupo_problema VARCHAR(255),
+    problema TEXT,
+    forma_contrato VARCHAR(255),
+    respondida VARCHAR(50),
+    situacao VARCHAR(100),
+    avaliacao VARCHAR(100),
+    nota_consumidor INT,
+    codigo_anac VARCHAR(50)
+);
+
+CREATE TABLE registroLog (
+idLog INT PRIMARY KEY AUTO_INCREMENT,
+info VARCHAR(500),
+erro VARCHAR(500),
+statusLog BOOLEAN
+);
+
+truncate table empresa;
+
 INSERT INTO empresa (cnpj, nomeFantasia, razaoSocial) VALUES
-('11222333000144', 'AeroTech Solutions', 'AeroTech Solucoes Aeronauticas LTDA'),
-('55666777000188', 'SkyHigh Analytics', 'SkyHigh Analise de Dados SA'),
-('99888777000166', 'InfraAir Portos', 'InfraAir Infraestrutura Aeroportuaria LTDA');
+('99888777000166', 'gol', 'Gol linhas Aéreas');
 
 
 INSERT INTO usuario (fkEmpresa, nome, cpf, email, senha, cargo) VALUES
@@ -64,7 +91,7 @@ INSERT INTO chaveDeAcesso (fkEmpresa, status, codigo, dataCriacao) VALUES
 
 select * from usuario;
 
-
 select * from usuario where senha = md5('senhaForte123');
 
 
+-- coidigo
