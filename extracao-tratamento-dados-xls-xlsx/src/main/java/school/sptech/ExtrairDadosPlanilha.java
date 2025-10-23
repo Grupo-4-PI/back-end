@@ -135,7 +135,6 @@ public class ExtrairDadosPlanilha {
                 indice_proxima_coluna_esperada++;
             }
 
-            // --- ALTERAÇÃO 1: IF TERNÁRIO SUBSTITUÍDO ---
             if (indice_proxima_coluna_esperada < TAMANHO_FIXO_ESPERADO_LINHA) {
 
                 String valor_para_adicionar;
@@ -146,7 +145,6 @@ public class ExtrairDadosPlanilha {
                 }
                 valores_celulas_linha_atual.add(valor_para_adicionar);
             }
-            // --- FIM DA ALTERAÇÃO 1 ---
 
             indice_proxima_coluna_esperada++;
         }
@@ -217,15 +215,11 @@ public class ExtrairDadosPlanilha {
         Long total_registros_inseridos = 0L;
         Integer TAMANHO_FIXO_ESPERADO_LINHA = 30;
 
-        // --- ALTERAÇÃO 2: FOR-EACH SUBSTITUÍDO POR FOR COMUM ---
-        // 1. Converte o Set de chaves (nomes das abas) para uma Lista
         List<String> nomes_das_abas = new ArrayList<>(dados_brutos_por_aba.keySet());
 
-        // 2. Usa um 'for' comum (baseado em índice) para iterar pela lista
         for (int i_aba = 0; i_aba < nomes_das_abas.size(); i_aba++) {
             String nome_da_aba = nomes_das_abas.get(i_aba); // Pega o nome da aba pelo índice
 
-            // O código original do loop continua aqui
             List<List<String>> dados_brutos_da_aba = dados_brutos_por_aba.get(nome_da_aba);
             Long registros_inseridos_nesta_aba = 0L;
             Log.info("Processando aba (memória) '" + nome_da_aba + "'...");
@@ -283,7 +277,6 @@ public class ExtrairDadosPlanilha {
             Log.sucesso("Aba '" + nome_da_aba + "' (memória) processada. " + registros_inseridos_nesta_aba + " registros inseridos.");
             total_registros_inseridos += registros_inseridos_nesta_aba;
         }
-        // --- FIM DA ALTERAÇÃO 2 ---
 
         Log.sucesso("Processamento .xls concluído. Total geral inserido: " + total_registros_inseridos);
     }

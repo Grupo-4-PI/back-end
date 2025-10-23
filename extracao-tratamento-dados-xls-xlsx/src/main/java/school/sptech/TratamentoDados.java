@@ -1,6 +1,6 @@
 package school.sptech;
 
-import school.sptech.LogsExtracao.Log; // Certifique-se de que esta classe Log exista e funcione
+import school.sptech.LogsExtracao.Log;
 
 import java.text.Normalizer;
 import java.time.LocalDate;
@@ -11,7 +11,6 @@ import java.util.List;
 
 public class TratamentoDados {
 
-    // --- Constantes para os índices das colunas ---
     private static final Integer indiceUf = 2;
     private static final Integer indiceCidade = 3;
     private static final Integer indiceDataAbertura = 6;
@@ -97,7 +96,7 @@ public class TratamentoDados {
 
     public Dados tratarLinhaEInserir(List<String> dadosLinha, Integer numeroLinha, DBConnection dbConnectionProvider) {
         try {
-            if (dadosLinha == null || dadosLinha.size() <= indiceCodigoANAC) { // Garante que temos todas as colunas esperadas
+            if (dadosLinha == null || dadosLinha.size() <= indiceCodigoANAC) {
                 Log.erro("Linha " + numeroLinha + " inválida (incompleta ou nula). Pulando.");
                 return null;
             }

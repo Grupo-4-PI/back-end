@@ -20,7 +20,6 @@ public class S3Service {
         this.s3Client = S3Provider.getClient();
     }
 
-    // Seu método para baixar um arquivo continua o mesmo
     public InputStream getFileAsInputStream(String bucketName, String fileKey) {
         System.out.printf("Iniciando download do arquivo '%s' do bucket '%s'...%n", fileKey, bucketName);
         try {
@@ -35,13 +34,6 @@ public class S3Service {
         }
     }
 
-    /**
-     * NOVO MÉTODO: Encontra o arquivo mais recente em um bucket com base na data de modificação.
-     *
-     * @param bucketName O nome do bucket.
-     * @param suffix     O sufixo do arquivo para filtrar (ex: ".xlsx").
-     * @return um Optional contendo a chave (nome) do arquivo mais recente, ou vazio se o bucket estiver vazio.
-     */
     public Optional<String> getLatestFileKey(String bucketName, String suffix) {
         System.out.println("Procurando o arquivo mais recente no bucket: " + bucketName);
         try {
@@ -52,15 +44,14 @@ public class S3Service {
             List<S3Object> objects = s3Client.listObjectsV2(listReq).contents();
 
             if (objects.isEmpty()) {
-                return Optional.empty(); // Retorna vazio se não houver objetos
+                return Optional.empty();
             }
 
-            // Usando a API de Streams do Java para encontrar o objeto com a maior data de modificação
             Optional<S3Object> latestObject = objects.stream()
-                    .filter(obj -> obj.key().toLowerCase().endsWith(suffix)) // Filtra apenas arquivos com o sufixo desejado
-                    .max(Comparator.comparing(S3Object::lastModified)); // Encontra o máximo pela data
+                    .filter(obj -> obj.key().toLowerCase().endsWith(suffix))
+                    .max(Comparator.comparing(S3Object::lastModified));
 
-            return latestObject.map(S3Object::key); // Mapeia o S3Object para sua chave (nome do arquivo)
+            return latestObject.map(S3Object::key);
 
         } catch (S3Exception e) {
             System.err.println("Erro ao listar arquivos no S3: " + e.awsErrorDetails().errorMessage());
