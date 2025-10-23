@@ -1,5 +1,4 @@
-create database airwise;
-use airwise;
+USE db_airwise;
 
 CREATE TABLE empresa (
     idEmpresa INT AUTO_INCREMENT PRIMARY KEY,
@@ -14,7 +13,7 @@ CREATE TABLE usuario (
     nome VARCHAR(45) NOT NULL,
     cpf CHAR(11) NOT NULL,
     email VARCHAR(45) NOT NULL,
-    senha VARCHAR(45) NOT NULL UNIQUE,	
+    senha VARCHAR(45) NOT NULL,
     cargo VARCHAR(45),
     FOREIGN KEY (fkEmpresa) REFERENCES empresa(idEmpresa)
 );
@@ -64,7 +63,8 @@ CREATE TABLE reclamacoes (
 );
 
 INSERT INTO empresa (cnpj, nomeFantasia, razaoSocial) VALUES
-('99888777000166', 'gol', 'Gol linhas Aéreas');
+('99888777000166', 'gol linhas aereas', 'Gol linhas Aéreas'),
+('99588777500156', 'azul linhas aereas', 'Azul Linhas Aéreas');
 
 
 INSERT INTO usuario (fkEmpresa, nome, cpf, email, senha, cargo) VALUES
@@ -73,18 +73,8 @@ INSERT INTO usuario (fkEmpresa, nome, cpf, email, senha, cargo) VALUES
 
 INSERT INTO endereco (fkEmpresa, cep, logradouro, numero, bairro, cidade, uf) VALUES
 (1, '01311-000', 'Avenida Paulista', 1578, 'Bela Vista', 'São Paulo', 'SP'),
-(2, '20090-003', 'Avenida Rio Branco', 1, 'Centro', 'Rio de Janeiro', 'RJ'),
-(3, '70340-906', 'SBN Quadra 2', 10, 'Asa Norte', 'Brasília', 'DF');
+(2, '20090-003', 'Avenida Rio Branco', 1, 'Centro', 'Rio de Janeiro', 'RJ');
 
 INSERT INTO chaveDeAcesso (fkEmpresa, status, codigo, dataCriacao) VALUES
 (1, 1, 'AERO-TECH-KEY-2025-ACTIVE', '2025-01-15'),
-(2, 0, 'SKY-HIGH-KEY-2024-INACTIVE', '2024-11-20'),
-(3, 1, 'INFRAAIR-KEY-2025-VALID', '2025-03-10');
-
-select * from usuario;
-
-Select * from reclamacoes;
-
-Select * from empresa;
-
-select * from usuario where senha = md5('senhaForte123');
+(2, 0, 'SKY-HIGH-KEY-2024-INACTIVE', '2024-11-20');

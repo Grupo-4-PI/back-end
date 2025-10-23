@@ -39,6 +39,7 @@
   </build>
   <properties>
     <maven.compiler.target>21</maven.compiler.target>
+    <log4j2.version>2.23.1</log4j2.version>
     <maven.compiler.source>21</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>

@@ -1,57 +1,72 @@
-// src/main/java/school/sptech/Main.java
 package school.sptech;
 
+// 1. ADICIONE A IMPORTAÇÃO AQUI
+import org.apache.poi.util.IOUtils;
+
 import school.sptech.aws.S3Service;
+import school.sptech.LogsExtracao.Log;
+
 import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        String bucketName = System.getenv("S3_BUCKET_NAME");
+        Integer NOVO_LIMITE_MB = 150 * 1024 * 1024; // 150MB em bytes
+        IOUtils.setByteArrayMaxOverride(NOVO_LIMITE_MB);
 
-        if (bucketName == null || bucketName.isBlank()) {
-            System.err.println("ERRO CRÍTICO: A variável de ambiente 'S3_BUCKET_NAME' não está definida.");
+
+        String nome_bucket_s3 = System.getenv("S3_BUCKET_NAME");
+
+        if (nome_bucket_s3 == null || nome_bucket_s3.isBlank()) {
+            System.err.println("ERRO CRÍTICO: Variável de ambiente 'S3_BUCKET_NAME' não definida.");
+            Log.erro("Variável de ambiente 'S3_BUCKET_NAME' não definida.");
             return;
         }
 
-        System.out.println("Iniciando o programa...");
-        S3Service s3Service = new S3Service();
-        ExtrairDadosPlanilha extrator = new ExtrairDadosPlanilha();
+        Log.info("Iniciando aplicação...");
+        Log.info("Usando bucket S3: " + nome_bucket_s3);
+
+        S3Service servico_s3 = new S3Service();
+        ExtrairDadosPlanilha extrator_planilha = new ExtrairDadosPlanilha();
+        Boolean sucesso = false;
 
         try {
-            // 1. Encontra o arquivo mais recente no bucket que termine com .xlsx
-            Optional<String> latestFileKeyOpt = s3Service.getLatestFileKey(bucketName, ".xlsx");
+            Log.info("Procurando arquivo .xlsx mais recente no bucket...");
+            Optional<String> chave_arquivo_recente_opt = servico_s3.getLatestFileKey(nome_bucket_s3, ".xlsx");
 
-            // 2. Verifica se um arquivo foi encontrado
-            if (latestFileKeyOpt.isEmpty()) {
-                System.out.println("Nenhum arquivo .xlsx encontrado no bucket para processar.");
+            if (chave_arquivo_recente_opt.isEmpty()) {
+                Log.erro("Nenhum arquivo .xlsx encontrado no bucket '" + nome_bucket_s3 + "' para processar.");
                 return;
             }
 
-            String fileKey = latestFileKeyOpt.get();
-            System.out.println("Arquivo mais recente encontrado: " + fileKey + ". Iniciando processamento.");
+            String chave_arquivo = chave_arquivo_recente_opt.get();
+            Log.info("Arquivo mais recente encontrado: '" + chave_arquivo + "'. Iniciando download e processamento.");
 
-            // 3. Baixa e processa o arquivo encontrado (sua lógica original)
-            try (InputStream planilhaStream = s3Service.getFileAsInputStream(bucketName, fileKey)) {
+            try (InputStream stream_planilha = servico_s3.getFileAsInputStream(nome_bucket_s3, chave_arquivo)) {
 
-                System.out.println("Download concluído. Iniciando extração e tratamento dos dados...");
-                Map<String, List<Dados>> dadosProntos = extrator.extrairTratarDados(planilhaStream, fileKey);
+                Log.info("Download concluído. Iniciando extração, tratamento e inserção dos dados...");
 
-                if (dadosProntos != null && !dadosProntos.isEmpty()) {
-                    System.out.println("\n--- PROCESSO CONCLUÍDO COM SUCESSO ---");
-                } else {
-                    System.out.println("\n--- PROCESSO FINALIZADO, MAS SEM DADOS VÁLIDOS RETORNADOS ---");
-                }
+                extrator_planilha.extrairTratarDados(stream_planilha, chave_arquivo);
+
+                sucesso = true;
+
             }
 
+        } catch (RuntimeException re) {
+            Log.erro("Erro durante interação com S3: " + re.getMessage());
+            re.printStackTrace();
         } catch (Exception e) {
-            System.err.println("\n--- O PROCESSO FALHOU ---");
-            System.err.println("Ocorreu um erro crítico na execução: " + e.getMessage());
+            Log.erro("ERRO CRÍTICO inesperado na execução principal: " + e.getMessage());
             e.printStackTrace();
+        } finally {
+            if (sucesso) {
+                Log.sucesso("\n--- PROCESSO CONCLUÍDO COM SUCESSO ---");
+            } else {
+                Log.erro("\n--- O PROCESSO FALHOU OU TERMINOU SEM PROCESSAR DADOS ---");
+            }
+            Log.info("Aplicação finalizada.");
         }
     }
 }

@@ -1,6 +1,6 @@
 package school.sptech;
 
-import school.sptech.LogsExtracao.Log;
+import school.sptech.LogsExtracao.Log; // Certifique-se de que esta classe Log exista e funcione
 
 import java.text.Normalizer;
 import java.time.LocalDate;
@@ -11,6 +11,7 @@ import java.util.List;
 
 public class TratamentoDados {
 
+    // --- Constantes para os índices das colunas ---
     private static final Integer indiceUf = 2;
     private static final Integer indiceCidade = 3;
     private static final Integer indiceDataAbertura = 6;
@@ -37,12 +38,9 @@ public class TratamentoDados {
         if (texto == null || texto.trim().isEmpty() || texto.equalsIgnoreCase("null")) {
             return null;
         }
-
         String textoNormalizado = Normalizer.normalize(texto, Normalizer.Form.NFD);
-
         String textoSemAcentos = textoNormalizado.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
-
-        return textoSemAcentos.trim().toLowerCase();
+        return textoSemAcentos.replaceAll("\\s+", " ").trim().toLowerCase();
     }
 
     private Integer converterStringParaInteger(String texto, Integer numeroLinha, String nomeCampo) {
@@ -52,8 +50,9 @@ public class TratamentoDados {
         try {
             String textoNormalizado = texto.trim().replace(',', '.');
             Double valorDouble = Double.parseDouble(textoNormalizado);
-            return valorDouble.intValue();
+            return valorDouble.intValue(); // Pega a parte inteira
         } catch (NumberFormatException e) {
+            Log.erro(String.format("Não foi possível converter '%s' para número na linha %d, campo '%s'. Retornando null.", texto, numeroLinha, nomeCampo));
             return null;
         }
     }
@@ -75,27 +74,35 @@ public class TratamentoDados {
         if (texto == null || texto.trim().isEmpty() || texto.equalsIgnoreCase("null")) {
             return null;
         }
-        for (int i = 0; i < formatadorDataHora.size(); i++) {
-            LocalDateTime resultado = tentarParse(texto.trim(), formatadorDataHora.get(i));
-            if (resultado != null){
+        String textoLimpo = texto.trim();
+        for (DateTimeFormatter formatador : formatadorDataHora) {
+            LocalDateTime resultado = tentarParse(textoLimpo, formatador);
+            if (resultado != null) {
                 return resultado;
             }
         }
+        Log.erro(String.format("Não foi possível converter '%s' para DataHora na linha %d, campo '%s'. Formatos tentados: %s. Retornando null.",
+                texto, numeroLinha, nomeCampo, formatadorDataHora.toString()));
         return null;
     }
 
-    private LocalDate converterStringParaData(String texto, Integer  numeroLinha, String nomeCampo) {
+    private LocalDate converterStringParaData(String texto, Integer numeroLinha, String nomeCampo) {
         LocalDateTime dataHora = converterStringParaDataHora(texto, numeroLinha, nomeCampo);
-        if (dataHora != null){
+        if (dataHora != null) {
             return dataHora.toLocalDate();
         }
+
         return null;
     }
 
-    public Dados tratarLinha(List<String> dadosLinha, Integer numeroLinha) {
+    public Dados tratarLinhaEInserir(List<String> dadosLinha, Integer numeroLinha, DBConnection dbConnectionProvider) {
         try {
-            String nomeFantasiaStr = dadosLinha.get(indiceNomeFantasia);
+            if (dadosLinha == null || dadosLinha.size() <= indiceCodigoANAC) { // Garante que temos todas as colunas esperadas
+                Log.erro("Linha " + numeroLinha + " inválida (incompleta ou nula). Pulando.");
+                return null;
+            }
 
+            String nomeFantasiaStr = dadosLinha.get(indiceNomeFantasia);
             if (nomeFantasiaStr == null || nomeFantasiaStr.trim().isEmpty()) {
                 return null;
             }
@@ -119,31 +126,20 @@ public class TratamentoDados {
             String codigoANAC = padronizarString(dadosLinha.get(indiceCodigoANAC));
 
             Dados linha_dados_tratados = new Dados(
-                    uf,
-                    cidade,
-                    dataAbertura,
-                    dataHoraResposta,
-                    dataFinalizacao,
-                    tempoResposta,
-                    nomeFantasia,
-                    assunto,
-                    grupoProblema,
-                    problema,
-                    formaContrato,
-                    respondida,
-                    situacao,
-                    avaliacaoReclamacao,
-                    notaConsumidor,
-                    codigoANAC
+                    uf, cidade, dataAbertura, dataHoraResposta, dataFinalizacao, tempoResposta,
+                    nomeFantasia, assunto, grupoProblema, problema, formaContrato,
+                    respondida, situacao, avaliacaoReclamacao, notaConsumidor, codigoANAC
             );
-            DBConnection dbConnectionProvider = new DBConnection();
 
             dbConnectionProvider.insercaoDados(linha_dados_tratados);
 
             return linha_dados_tratados;
 
+        } catch (IndexOutOfBoundsException iobe) {
+            Log.erro("Erro de índice fora dos limites na linha " + numeroLinha + ". Verifique o número de colunas lidas. Detalhes: " + iobe.getMessage());
+            return null;
         } catch (Exception e) {
-            Log.erro("ERRO CRÍTICO no processo de tratamento de dados: " + e.getMessage());
+            Log.erro("ERRO CRÍTICO no tratamento/inserção da linha " + numeroLinha + ": " + e.getMessage());
             return null;
         }
     }
