@@ -1,6 +1,5 @@
 package school.sptech;
 
-// 1. ADICIONE A IMPORTAÇÃO AQUI
 import org.apache.poi.util.IOUtils;
 
 import school.sptech.aws.S3Service;
@@ -13,7 +12,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Integer NOVO_LIMITE_MB = 150 * 1024 * 1024; // 150MB em bytes
+        Integer NOVO_LIMITE_MB = 150 * 1024 * 1024; 
         IOUtils.setByteArrayMaxOverride(NOVO_LIMITE_MB);
 
 

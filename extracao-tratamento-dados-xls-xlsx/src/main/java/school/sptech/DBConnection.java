@@ -60,9 +60,9 @@ public class DBConnection {
 
         String sqlInsert = """
         INSERT INTO reclamacoes (
-            uf, cidade, dataAbertura, dataHoraResposta, dataFinalizacao, 
-            tempoResposta, nomeFantasia, assunto, grupoProblema, problema, 
-            formaContrato, respondida, situacao, avaliacao, notaConsumidor, codigoANAC, fkEmpresa
+            uf, cidade, data_abertura, data_hora_resposta, data_finalizacao, 
+            tempo_resposta, nome_fantasia, assunto, grupo_problema, problema, 
+            forma_contrato, respondida, situacao, avaliacao, nota_consumidor, codigo_anac, fkEmpresa
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """;
 
