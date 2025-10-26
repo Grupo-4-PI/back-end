@@ -24,11 +24,10 @@ echo "-->Iniciando a aplicação com Docker Compose..."
 sudo docker compose -f infraestrutura/docker-compose.yml up --build -d
 
 echo "--> Carregando/Atualizando o agendamento do cron..."
-cd /home/ubuntu/infraestrutura
-crontab trabalho_agendado.cron
+sudo crontab /home/ubuntu/infraestrutura/trabalho_agendado.cron
 echo "Agendamento do cron carregado a partir de trabalho_agendado.cron"
 
-echo ""
+echo "" 
 echo ">>> PROCESSO FINALIZADO <<<"
 echo "Aplicação iniciada."
-echo "Use 'sudo docker compose -f infraestrutura/docker-compose.yml ps' para verificar o status."
+echo "Use 'sudo docker compose -f infraestrutura/docker-compose.yml ps' para verificar o status."

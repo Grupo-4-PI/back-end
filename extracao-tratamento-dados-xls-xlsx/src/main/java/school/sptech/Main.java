@@ -15,7 +15,6 @@ public class Main {
         Integer NOVO_LIMITE_MB = 150 * 1024 * 1024; 
         IOUtils.setByteArrayMaxOverride(NOVO_LIMITE_MB);
 
-
         String nome_bucket_s3 = System.getenv("S3_BUCKET_NAME");
 
         if (nome_bucket_s3 == null || nome_bucket_s3.isBlank()) {
@@ -33,10 +32,12 @@ public class Main {
 
         try {
             Log.info("Procurando arquivo .xlsx mais recente no bucket...");
+
             Optional<String> chave_arquivo_recente_opt = servico_s3.getLatestFileKey(nome_bucket_s3, ".xlsx");
 
             if (chave_arquivo_recente_opt.isEmpty()) {
                 Log.erro("Nenhum arquivo .xlsx encontrado no bucket '" + nome_bucket_s3 + "' para processar.");
+
                 return;
             }
 
@@ -44,15 +45,16 @@ public class Main {
             Log.info("Arquivo mais recente encontrado: '" + chave_arquivo + "'. Iniciando download e processamento.");
 
             try (InputStream stream_planilha = servico_s3.getFileAsInputStream(nome_bucket_s3, chave_arquivo)) {
-
                 Log.info("Download concluído. Iniciando extração, tratamento e inserção dos dados...");
 
-                extrator_planilha.extrairTratarDados(stream_planilha, chave_arquivo);
+                DBConnection conexao_banco = new DBConnection();
 
-                sucesso = true;
+                if (conexao_banco.truncateDadosReclamacoe()){
+                    extrator_planilha.extrairTratarDados(stream_planilha, chave_arquivo);
 
+                    sucesso = true;
+                }
             }
-
         } catch (RuntimeException re) {
             Log.erro("Erro durante interação com S3: " + re.getMessage());
             re.printStackTrace();
@@ -65,6 +67,7 @@ public class Main {
             } else {
                 Log.erro("\n--- O PROCESSO FALHOU OU TERMINOU SEM PROCESSAR DADOS ---");
             }
+
             Log.info("Aplicação finalizada.");
         }
     }

@@ -91,4 +91,15 @@ public class DBConnection {
             Log.erro("Erro ao inserir reclamação para empresa '" + dados.getNomeFantasia() + "': " + e.getMessage());
         }
     }
+
+    public Boolean truncateDadosReclamacoe(){
+        try {
+            String sql = "Truncate reclamacoes;";
+            this.jdbcTemplate.update(sql);
+            return true;
+        } catch (Exception e){
+            Log.erro("Erro ao limpar dados de reclamações");
+            return false;
+        }
+    }
 }
