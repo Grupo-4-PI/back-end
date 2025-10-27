@@ -89,6 +89,7 @@ public class DBConnection {
             Log.sucesso("Sucesso ao inserir reclamação para empresa '" + dados.getNomeFantasia() + "'");
         } catch (Exception e) {
             Log.erro("Erro ao inserir reclamação para empresa '" + dados.getNomeFantasia() + "': " + e.getMessage());
+            insertLog("Erro ao inserir reclamação para empresa '" + dados.getNomeFantasia() + "': " + e.getMessage(), "erro");
         }
     }
 
@@ -96,10 +97,23 @@ public class DBConnection {
         try {
             String sql = "Truncate reclamacoes;";
             this.jdbcTemplate.update(sql);
+
             return true;
         } catch (Exception e){
             Log.erro("Erro ao limpar dados de reclamações");
+
             return false;
+        }
+    }
+
+    public void insertLog(String log, String status){
+        try {
+            String sql = "INSERT log (logMensagem, status) VALUES (?, ?)";
+            this.jdbcTemplate.update(sql, log, status);
+
+            Log.sucesso("Sucesso ao inserir log");
+        } catch (Exception e){
+            Log.erro("[ERRO] [Erro ao inserir log '" + e.getMessage() + "']");
         }
     }
 }

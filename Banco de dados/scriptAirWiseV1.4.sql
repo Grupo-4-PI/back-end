@@ -62,6 +62,14 @@ CREATE TABLE reclamacoes (
     FOREIGN KEY (fkEmpresa) REFERENCES empresa(idEmpresa)
 );
 
+CREATE TABLE log (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    logMensagem TEXT,
+    DataHora DATETIME DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(7),
+    CONSTRAINT chk_status CHECK (status IN ('sucesso', 'erro'))
+);
+
 INSERT INTO empresa (cnpj, nomeFantasia, razaoSocial) VALUES
 ('02012862000160','latam airlines (tam)','tam linhas aereas s/a.'),
 ('07575651000159','gol linhas aereas','gol linhas aereas s.a.'),

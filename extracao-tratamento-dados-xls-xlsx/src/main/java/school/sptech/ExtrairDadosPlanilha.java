@@ -19,20 +19,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects; // Necessário para Objects.nonNull
+import java.util.Objects;
 
 import school.sptech.LogsExtracao.Log;
 
 public class ExtrairDadosPlanilha {
 
     public void extrairTratarDados(InputStream stream_entrada_arquivo, String nome_arquivo) {
-        if (nome_arquivo == null || stream_entrada_arquivo == null) {
-            Log.erro("ERRO CRÍTICO: Nome do arquivo ou InputStream nulos.");
-            return;
-        }
-
-        Log.info("Iniciando processo de extração e tratamento para o arquivo: " + nome_arquivo);
-        TratamentoDados tratador_de_linha = new TratamentoDados();
         DBConnection conexao_banco_dados = null;
 
         try {
@@ -44,22 +37,42 @@ public class ExtrairDadosPlanilha {
             return;
         }
 
+        if (nome_arquivo == null || stream_entrada_arquivo == null) {
+            Log.erro("ERRO CRÍTICO: Nome do arquivo ou InputStream nulos.");
+
+            conexao_banco_dados.insertLog("[ERRO] [Nome do arquivo ou InputStream nulos]", "erro");
+
+            return;
+        }
+
+        Log.info("Iniciando processo de extração e tratamento para o arquivo: " + nome_arquivo);
+
+        conexao_banco_dados.insertLog("[SUCESSO] [Iniciando processo de extração e tratamento para o arquivo: " + nome_arquivo + "]","sucesso");
+        TratamentoDados tratador_de_linha = new TratamentoDados();
+
         try {
             Long total_linhas_processadas = 0L;
 
             if (nome_arquivo.toLowerCase().endsWith(".xlsx")) {
                 Log.info("Processando .xlsx com STREAMING.");
+                conexao_banco_dados.insertLog("[SUCESSO] [Processando .xlsx com STREAMING]", "sucesso");
+
                 total_linhas_processadas = processarPlanilhaXLSXStreaming(stream_entrada_arquivo, tratador_de_linha, conexao_banco_dados);
             } else if (nome_arquivo.toLowerCase().endsWith(".xls")) {
                 Log.erro("Processando arquivo .xls. Arquivos grandes podem consumir memória.");
+
+                conexao_banco_dados.insertLog("Processando arquivo .xls. Arquivos grandes podem consumir memória", "erro");
                 total_linhas_processadas = processarPlanilhaXLSNaMemoria(stream_entrada_arquivo, tratador_de_linha, conexao_banco_dados);
             } else {
+                conexao_banco_dados.insertLog("[ERRO] [Formato de arquivo não suportado: " + nome_arquivo + "]", "erro");
+
                 throw new IllegalArgumentException("Formato de arquivo não suportado: " + nome_arquivo);
             }
             Log.sucesso("Processo de extração e tratamento concluído para: " + nome_arquivo);
             Log.sucesso("Total GERAL de linhas processadas: " + total_linhas_processadas);
         } catch (Exception e) {
             Log.erro("ERRO CRÍTICO durante o processo: " + e.getMessage());
+            conexao_banco_dados.insertLog("[ERRO] [Erro durante o processo: " + e.getMessage() + "]", "erro");
             e.printStackTrace();
         } finally {
             Log.info("Finalizando processo para: " + nome_arquivo);

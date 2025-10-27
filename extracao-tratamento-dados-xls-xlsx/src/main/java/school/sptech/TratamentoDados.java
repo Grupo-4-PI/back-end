@@ -49,7 +49,7 @@ public class TratamentoDados {
         try {
             String textoNormalizado = texto.trim().replace(',', '.');
             Double valorDouble = Double.parseDouble(textoNormalizado);
-            return valorDouble.intValue(); // Pega a parte inteira
+            return valorDouble.intValue();
         } catch (NumberFormatException e) {
             Log.erro(String.format("Não foi possível converter '%s' para número na linha %d, campo '%s'. Retornando null.", texto, numeroLinha, nomeCampo));
             return null;
@@ -98,6 +98,8 @@ public class TratamentoDados {
         try {
             if (dadosLinha == null || dadosLinha.size() <= indiceCodigoANAC) {
                 Log.erro("Linha " + numeroLinha + " inválida (incompleta ou nula). Pulando.");
+                dbConnectionProvider.insertLog("[ERRO] [Linha " + numeroLinha + " inválida (incompleta ou nula). Pulando]", "erro");
+
                 return null;
             }
 
@@ -136,9 +138,13 @@ public class TratamentoDados {
 
         } catch (IndexOutOfBoundsException iobe) {
             Log.erro("Erro de índice fora dos limites na linha " + numeroLinha + ". Verifique o número de colunas lidas. Detalhes: " + iobe.getMessage());
+            dbConnectionProvider.insertLog("[ERRO] [Erro de índice fora dos limites na linha " + numeroLinha + ". Verifique o número de colunas lidas. Detalhes: " + iobe.getMessage() + "]", "erro");
+
             return null;
         } catch (Exception e) {
             Log.erro("ERRO CRÍTICO no tratamento/inserção da linha " + numeroLinha + ": " + e.getMessage());
+            dbConnectionProvider.insertLog("[ERRO] [Erro no tratamento/inserção da linha " + numeroLinha + ": " + e.getMessage() + "]", "erro");
+
             return null;
         }
     }
