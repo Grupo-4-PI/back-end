@@ -125,5 +125,7 @@ INSERT INTO endereco (fkEmpresa, cep, logradouro, numero, bairro, cidade, uf) VA
 (2, '20090-003', 'Avenida Rio Branco', 1, 'Centro', 'Rio de Janeiro', 'RJ');
 
 INSERT INTO chaveDeAcesso (fkEmpresa, status, codigo, dataCriacao) VALUES
-(1, 1, 'AERO-TECH-KEY-2025-ACTIVE', '2025-01-15'),
-(2, 0, 'SKY-HIGH-KEY-2024-INACTIVE', '2024-11-20');
+(1, 0, 'AERO-TECH-KEY-2026-ATIVO', '2025-01-15'),
+(1, 0, 'AERO-TECH-KEY-2027-ATIVO', '2025-01-15'),
+(1, 0, 'AERO-TECH-KEY-2028-ATIVO', '2025-01-15'),
+(2, 0, 'SKY-HIGH-KEY-2024-ATIVO', '2024-11-20');
