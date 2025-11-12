@@ -11,52 +11,79 @@ import java.util.List;
 
 public class TratamentoDados {
 
-    private static final Integer indiceUf = 2;
-    private static final Integer indiceCidade = 3;
-    private static final Integer indiceDataAbertura = 6;
-    private static final Integer indiceDataResposta = 7;
-    private static final Integer indiceDataFinalizacao = 10;
-    private static final Integer indiceTempoResposta = 13;
-    private static final Integer indiceNomeFantasia = 14;
-    private static final Integer indiceAssunto = 16;
-    private static final Integer indiceGrupoProblema = 17;
-    private static final Integer indiceProblema = 18;
-    private static final Integer indiceFormaContrato = 19;
-    private static final Integer indiceRespondida = 21;
-    private static final Integer indiceSituacao = 22;
-    private static final Integer indiceAvaliacao = 23;
-    private static final Integer indiceNotaConsumidor = 24;
-    private static final Integer indiceCodigoANAC = 27;
+    private static final List<DateTimeFormatter> formatador_data_hora = List.of(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-    private static final List<DateTimeFormatter> formatadorDataHora = List.of(
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"),
-            DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    );
+    public static Dados tratarLinha(List<String> dados_linha, Integer numero_linha) {
+        try {
+            if (dados_linha == null || dados_linha.size() <= IndicesColunas.CODIGOANAC.getIndice()) {
+                Log.erro("Linha " + numero_linha + " inválida (incompleta ou nula). Pulando.");
+                return null;
+            }
 
-    private String padronizarString(String texto) {
+            String uf_teste = dados_linha.get(IndicesColunas.UF.getIndice());
+            if (uf_teste != null && uf_teste.trim().equalsIgnoreCase("uf")) {
+                Log.info("Linha " + numero_linha + " identificada como cabeçalho duplicado. Pulando.");
+                return null;
+            }
+
+            String nome_fantasia_str = dados_linha.get(IndicesColunas.NOMEFANTASIA.getIndice());
+            if (nome_fantasia_str == null || nome_fantasia_str.trim().isEmpty()) {
+                return null;
+            }
+
+            LocalDate data_abertura = converterStringParaData(dados_linha.get(IndicesColunas.DATAABERTURA.getIndice()), numero_linha, "Data Abertura");
+            LocalDateTime data_hora_resposta = converterStringParaDataHora(dados_linha.get(IndicesColunas.DATAAMERESPOSTA.getIndice()), numero_linha, "Data Hora Resposta");
+            LocalDate data_finalizacao = converterStringParaData(dados_linha.get(IndicesColunas.DATAFINALIZACAO.getIndice()), numero_linha, "Data Finalização");
+            Integer tempo_resposta = converterStringParaInteger(dados_linha.get(IndicesColunas.TEMPORESPOSTA.getIndice()), numero_linha, "Tempo Resposta");
+            Integer nota_consumidor = converterStringParaInteger(dados_linha.get(IndicesColunas.NOTACONSUMIDOR.getIndice()), numero_linha, "Nota do Consumidor");
+
+            String nome_fantasia = padronizarString(nome_fantasia_str);
+            String uf = padronizarString(uf_teste);
+            String cidade = padronizarString(dados_linha.get(IndicesColunas.CIDADE.getIndice()));
+            String assunto = padronizarString(dados_linha.get(IndicesColunas.ASSUNTO.getIndice()));
+            String grupo_problema = padronizarString(dados_linha.get(IndicesColunas.GRUPOPROBLEMA.getIndice()));
+            String problema = padronizarString(dados_linha.get(IndicesColunas.PROBLEMA.getIndice()));
+            String forma_contrato = padronizarString(dados_linha.get(IndicesColunas.FORMACONTRATO.getIndice()));
+            String respondida = padronizarString(dados_linha.get(IndicesColunas.RESPONDIDA.getIndice()));
+            String situacao = padronizarString(dados_linha.get(IndicesColunas.SITUACAO.getIndice()));
+            String avaliacao_reclamacao = padronizarString(dados_linha.get(IndicesColunas.AVALIACAO.getIndice()));
+            String codigo_anac = padronizarString(dados_linha.get(IndicesColunas.CODIGOANAC.getIndice()));
+
+            return new Dados(uf, cidade, data_abertura, data_hora_resposta, data_finalizacao, tempo_resposta, nome_fantasia, assunto, grupo_problema, problema, forma_contrato, respondida, situacao, avaliacao_reclamacao, nota_consumidor, codigo_anac);
+
+        } catch (IndexOutOfBoundsException iobe) {
+            Log.erro("Erro de índice fora dos limites na linha " + numero_linha + ". Detalhes: " + iobe.getMessage());
+            return null;
+        } catch (Exception e) {
+            Log.erro("ERRO CRÍTICO no tratamento da linha " + numero_linha + ": " + e.getMessage());
+            return null;
+        }
+    }
+
+    public static String padronizarString(String texto) {
         if (texto == null || texto.trim().isEmpty() || texto.equalsIgnoreCase("null")) {
             return null;
         }
-        String textoNormalizado = Normalizer.normalize(texto, Normalizer.Form.NFD);
-        String textoSemAcentos = textoNormalizado.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
-        return textoSemAcentos.replaceAll("\\s+", " ").trim().toLowerCase();
+        String texto_normalizado = Normalizer.normalize(texto, Normalizer.Form.NFD);
+        String texto_sem_acentos = texto_normalizado.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        return texto_sem_acentos.replaceAll("\\s+", " ").trim().toLowerCase();
     }
 
-    private Integer converterStringParaInteger(String texto, Integer numeroLinha, String nomeCampo) {
+    public static Integer converterStringParaInteger(String texto, Integer numero_linha, String nome_campo) {
         if (texto == null || texto.trim().isEmpty() || texto.equalsIgnoreCase("null")) {
             return null;
         }
         try {
-            String textoNormalizado = texto.trim().replace(',', '.');
-            Double valorDouble = Double.parseDouble(textoNormalizado);
-            return valorDouble.intValue();
+            String texto_normalizado = texto.trim().replace(',', '.');
+            Double valor_double = Double.parseDouble(texto_normalizado);
+            return valor_double.intValue();
         } catch (NumberFormatException e) {
-            Log.erro(String.format("Não foi possível converter '%s' para número na linha %d, campo '%s'. Retornando null.", texto, numeroLinha, nomeCampo));
+            Log.erro(String.format("Não foi possível converter '%s' para número na linha %d, campo '%s'. Retornando null.", texto, numero_linha, nome_campo));
             return null;
         }
     }
 
-    private LocalDateTime tentarParse(String texto, DateTimeFormatter formatador) {
+    public static LocalDateTime tentarParse(String texto, DateTimeFormatter formatador) {
         try {
             return LocalDateTime.parse(texto, formatador);
         } catch (DateTimeParseException e1) {
@@ -69,83 +96,27 @@ public class TratamentoDados {
         }
     }
 
-    private LocalDateTime converterStringParaDataHora(String texto, Integer numeroLinha, String nomeCampo) {
+    public static LocalDateTime converterStringParaDataHora(String texto, Integer numero_linha, String nome_campo) {
         if (texto == null || texto.trim().isEmpty() || texto.equalsIgnoreCase("null")) {
             return null;
         }
-        String textoLimpo = texto.trim();
-        for (DateTimeFormatter formatador : formatadorDataHora) {
-            LocalDateTime resultado = tentarParse(textoLimpo, formatador);
+        String texto_limpo = texto.trim();
+        for (int i = 0; i < formatador_data_hora.size(); i++) {
+            DateTimeFormatter formatador = formatador_data_hora.get(i);
+            LocalDateTime resultado = tentarParse(texto_limpo, formatador);
             if (resultado != null) {
                 return resultado;
             }
         }
-        Log.erro(String.format("Não foi possível converter '%s' para DataHora na linha %d, campo '%s'. Formatos tentados: %s. Retornando null.",
-                texto, numeroLinha, nomeCampo, formatadorDataHora.toString()));
+        Log.erro(String.format("Não foi possível converter '%s' para DataHora na linha %d, campo '%s'. Formatos tentados: %s. Retornando null.", texto, numero_linha, nome_campo, formatador_data_hora.toString()));
         return null;
     }
 
-    private LocalDate converterStringParaData(String texto, Integer numeroLinha, String nomeCampo) {
-        LocalDateTime dataHora = converterStringParaDataHora(texto, numeroLinha, nomeCampo);
-        if (dataHora != null) {
-            return dataHora.toLocalDate();
+    public static LocalDate converterStringParaData(String texto, Integer numero_linha, String nome_campo) {
+        LocalDateTime data_hora = converterStringParaDataHora(texto, numero_linha, nome_campo);
+        if (data_hora != null) {
+            return data_hora.toLocalDate();
         }
-
         return null;
-    }
-
-    public Dados tratarLinhaEInserir(List<String> dadosLinha, Integer numeroLinha, DBConnection dbConnectionProvider) {
-        try {
-            if (dadosLinha == null || dadosLinha.size() <= indiceCodigoANAC) {
-                Log.erro("Linha " + numeroLinha + " inválida (incompleta ou nula). Pulando.");
-                dbConnectionProvider.insertLog("[ERRO] [Linha " + numeroLinha + " inválida (incompleta ou nula). Pulando]", "erro");
-
-                return null;
-            }
-
-            String nomeFantasiaStr = dadosLinha.get(indiceNomeFantasia);
-            if (nomeFantasiaStr == null || nomeFantasiaStr.trim().isEmpty()) {
-                return null;
-            }
-
-            LocalDate dataAbertura = converterStringParaData(dadosLinha.get(indiceDataAbertura), numeroLinha, "Data Abertura");
-            LocalDateTime dataHoraResposta = converterStringParaDataHora(dadosLinha.get(indiceDataResposta), numeroLinha, "Data Hora Resposta");
-            LocalDate dataFinalizacao = converterStringParaData(dadosLinha.get(indiceDataFinalizacao), numeroLinha, "Data Finalização");
-            Integer tempoResposta = converterStringParaInteger(dadosLinha.get(indiceTempoResposta), numeroLinha, "Tempo Resposta");
-            Integer notaConsumidor = converterStringParaInteger(dadosLinha.get(indiceNotaConsumidor), numeroLinha, "Nota do Consumidor");
-
-            String nomeFantasia = padronizarString(nomeFantasiaStr);
-            String uf = padronizarString(dadosLinha.get(indiceUf));
-            String cidade = padronizarString(dadosLinha.get(indiceCidade));
-            String assunto = padronizarString(dadosLinha.get(indiceAssunto));
-            String grupoProblema = padronizarString(dadosLinha.get(indiceGrupoProblema));
-            String problema = padronizarString(dadosLinha.get(indiceProblema));
-            String formaContrato = padronizarString(dadosLinha.get(indiceFormaContrato));
-            String respondida = padronizarString(dadosLinha.get(indiceRespondida));
-            String situacao = padronizarString(dadosLinha.get(indiceSituacao));
-            String avaliacaoReclamacao = padronizarString(dadosLinha.get(indiceAvaliacao));
-            String codigoANAC = padronizarString(dadosLinha.get(indiceCodigoANAC));
-
-            Dados linha_dados_tratados = new Dados(
-                    uf, cidade, dataAbertura, dataHoraResposta, dataFinalizacao, tempoResposta,
-                    nomeFantasia, assunto, grupoProblema, problema, formaContrato,
-                    respondida, situacao, avaliacaoReclamacao, notaConsumidor, codigoANAC
-            );
-
-            dbConnectionProvider.insercaoDados(linha_dados_tratados);
-
-            return linha_dados_tratados;
-
-        } catch (IndexOutOfBoundsException iobe) {
-            Log.erro("Erro de índice fora dos limites na linha " + numeroLinha + ". Verifique o número de colunas lidas. Detalhes: " + iobe.getMessage());
-            dbConnectionProvider.insertLog("[ERRO] [Erro de índice fora dos limites na linha " + numeroLinha + ". Verifique o número de colunas lidas. Detalhes: " + iobe.getMessage() + "]", "erro");
-
-            return null;
-        } catch (Exception e) {
-            Log.erro("ERRO CRÍTICO no tratamento/inserção da linha " + numeroLinha + ": " + e.getMessage());
-            dbConnectionProvider.insertLog("[ERRO] [Erro no tratamento/inserção da linha " + numeroLinha + ": " + e.getMessage() + "]", "erro");
-
-            return null;
-        }
     }
 }

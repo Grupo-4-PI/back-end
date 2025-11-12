@@ -7,38 +7,41 @@ public class Dados {
 
     private String uf;
     private String cidade;
-    private LocalDate dataAbertura;
-    private LocalDateTime dataHoraResposta;
-    private LocalDate dataFinalizacao;
-    private Integer tempoResposta;
-    private String nomeFantasia;
+    private LocalDate data_abertura;
+    private LocalDateTime data_hora_resposta;
+    private LocalDate data_finalizacao;
+    private Integer tempo_resposta;
+    private String nome_fantasia;
     private String assunto;
-    private String grupoProblema;
+    private String grupo_problema;
     private String problema;
-    private String formaContrato;
+    private String forma_contrato;
     private String respondida;
     private String situacao;
     private String avaliacao;
-    private Integer notaConsumidor;
-    private String codigoANAC;
+    private Integer nota_consumidor;
+    private String codigo_anac;
 
-    public Dados(String uf, String cidade, LocalDate dataAbertura, LocalDateTime dataHoraResposta, LocalDate dataFinalizacao, Integer tempoResposta, String nomeFantasia, String assunto, String grupoProblema, String problema, String formaContrato, String respondida, String situacao, String avaliacao, Integer notaConsumidor, String codigoANAC) {
+    public Dados(String uf, String cidade, LocalDate data_abertura, LocalDateTime data_hora_resposta, LocalDate data_finalizacao, Integer tempo_resposta, String nome_fantasia, String assunto, String grupo_problema, String problema, String forma_contrato, String respondida, String situacao, String avaliacao, Integer nota_consumidor, String codigo_anac) {
         this.uf = uf;
         this.cidade = cidade;
-        this.dataAbertura = dataAbertura;
-        this.dataHoraResposta = dataHoraResposta;
-        this.dataFinalizacao = dataFinalizacao;
-        this.tempoResposta = tempoResposta;
-        this.nomeFantasia = nomeFantasia;
+        this.data_abertura = data_abertura;
+        this.data_hora_resposta = data_hora_resposta;
+        this.data_finalizacao = data_finalizacao;
+        this.tempo_resposta = tempo_resposta;
+        this.nome_fantasia = nome_fantasia;
         this.assunto = assunto;
-        this.grupoProblema = grupoProblema;
+        this.grupo_problema = grupo_problema;
         this.problema = problema;
-        this.formaContrato = formaContrato;
+        this.forma_contrato = forma_contrato;
         this.respondida = respondida;
         this.situacao = situacao;
         this.avaliacao = avaliacao;
-        this.notaConsumidor = notaConsumidor;
-        this.codigoANAC = codigoANAC;
+        this.nota_consumidor = nota_consumidor;
+        this.codigo_anac = codigo_anac;
+    }
+
+    public Dados() {
     }
 
     public void setUf(String uf) {
@@ -49,40 +52,40 @@ public class Dados {
         this.cidade = cidade;
     }
 
-    public void setDataAbertura(LocalDate dataAbertura) {
-        this.dataAbertura = dataAbertura;
+    public void setDataAbertura(LocalDate data_abertura) {
+        this.data_abertura = data_abertura;
     }
 
-    public void setDataHoraResposta(LocalDateTime dataHoraResposta) {
-        this.dataHoraResposta = dataHoraResposta;
+    public void setDataHoraResposta(LocalDateTime data_hora_resposta) {
+        this.data_hora_resposta = data_hora_resposta;
     }
 
-    public void setDataFinalizacao(LocalDate dataFinalizacao) {
-        this.dataFinalizacao = dataFinalizacao;
+    public void setDataFinalizacao(LocalDate data_finalizacao) {
+        this.data_finalizacao = data_finalizacao;
     }
 
-    public void setTempoResposta(Integer tempoResposta) {
-        this.tempoResposta = tempoResposta;
+    public void setTempoResposta(Integer tempo_resposta) {
+        this.tempo_resposta = tempo_resposta;
     }
 
-    public void setNomeFantasia(String nomeFantasia) {
-        this.nomeFantasia = nomeFantasia;
+    public void setNomeFantasia(String nome_fantasia) {
+        this.nome_fantasia = nome_fantasia;
     }
 
     public void setAssunto(String assunto) {
         this.assunto = assunto;
     }
 
-    public void setGrupoProblema(String grupoProblema) {
-        this.grupoProblema = grupoProblema;
+    public void setGrupoProblema(String grupo_problema) {
+        this.grupo_problema = grupo_problema;
     }
 
     public void setProblema(String problema) {
         this.problema = problema;
     }
 
-    public void setFormaContrato(String formaContrato) {
-        this.formaContrato = formaContrato;
+    public void setFormaContrato(String forma_contrato) {
+        this.forma_contrato = forma_contrato;
     }
 
     public void setRespondida(String respondida) {
@@ -97,12 +100,12 @@ public class Dados {
         this.avaliacao = avaliacao;
     }
 
-    public void setNotaConsumidor(Integer notaConsumidor) {
-        this.notaConsumidor = notaConsumidor;
+    public void setNotaConsumidor(Integer nota_consumidor) {
+        this.nota_consumidor = nota_consumidor;
     }
 
-    public void setCodigoANAC(String codigoANAC) {
-        this.codigoANAC = codigoANAC;
+    public void setCodigoANAC(String codigo_anac) {
+        this.codigo_anac = codigo_anac;
     }
 
     public String getUf() {
@@ -114,23 +117,23 @@ public class Dados {
     }
 
     public LocalDate getDataAbertura() {
-        return dataAbertura;
+        return data_abertura;
     }
 
     public LocalDateTime getDataHoraResposta() {
-        return dataHoraResposta;
+        return data_hora_resposta;
     }
 
     public LocalDate getDataFinalizacao() {
-        return dataFinalizacao;
+        return data_finalizacao;
     }
 
     public Integer getTempoResposta() {
-        return tempoResposta;
+        return tempo_resposta;
     }
 
     public String getNomeFantasia() {
-        return nomeFantasia;
+        return nome_fantasia;
     }
 
     public String getAssunto() {
@@ -138,7 +141,7 @@ public class Dados {
     }
 
     public String getGrupoProblema() {
-        return grupoProblema;
+        return grupo_problema;
     }
 
     public String getProblema() {
@@ -146,7 +149,7 @@ public class Dados {
     }
 
     public String getFormaContrato() {
-        return formaContrato;
+        return forma_contrato;
     }
 
     public String getRespondida() {
@@ -162,11 +165,11 @@ public class Dados {
     }
 
     public Integer getNotaConsumidor() {
-        return notaConsumidor;
+        return nota_consumidor;
     }
 
     public String getCodigoANAC() {
-        return codigoANAC;
+        return codigo_anac;
     }
 
     @Override
@@ -174,20 +177,20 @@ public class Dados {
         return "Dados{" +
                 "uf='" + uf + " || " +
                 "cidade='" + cidade + " || " +
-                "dataAbertura=" + dataAbertura + " || " +
-                "dataHoraResposta=" + dataHoraResposta + " || " +
-                "dataFinalizacao=" + dataFinalizacao + " || " +
-                "tempoResposta=" + tempoResposta + " || " +
-                "nomeFantasia='" + nomeFantasia + " || " +
+                "dataAbertura=" + data_abertura + " || " +
+                "dataHoraResposta=" + data_hora_resposta + " || " +
+                "dataFinalizacao=" + data_finalizacao + " || " +
+                "tempoResposta=" + tempo_resposta + " || " +
+                "nomeFantasia='" + nome_fantasia + " || " +
                 "assunto='" + assunto + " || " +
-                "grupoProblema='" + grupoProblema + " || " +
+                "grupoProblema='" + grupo_problema + " || " +
                 "problema='" + problema +" || " +
-                "formaContrato='" + formaContrato + " || " +
+                "formaContrato='" + forma_contrato + " || " +
                 "respondida='" + respondida +" || " +
                 "situacao='" + situacao + " || " +
                 "avaliacao='" + avaliacao + " || " +
-                "notaConsumidor=" + notaConsumidor + " || " +
-                "codigoANAC='" + codigoANAC +
+                "notaConsumidor=" + nota_consumidor + " || " +
+                "codigoANAC='" + codigo_anac +
                 '}';
     }
 }

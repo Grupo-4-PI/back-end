@@ -6,8 +6,9 @@ import software.amazon.awssdk.services.s3.S3Client;
 
 public class S3Provider {
 
+    private static final String awsRegion = System.getenv("AWS_REGION");
+
     public static S3Client getClient() {
-        String awsRegion = System.getenv("AWS_REGION");
 
         if (awsRegion == null || awsRegion.isBlank()) {
             throw new IllegalStateException("A variável de ambiente 'AWS_REGION' não está definida.");

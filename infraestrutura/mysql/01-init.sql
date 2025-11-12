@@ -59,7 +59,7 @@ CREATE TABLE reclamacoes (
     situacao VARCHAR(100),
     avaliacao VARCHAR(100),
     nota_consumidor INT,
-    codigo_anac VARCHAR(50),
+    codigo_anac VARCHAR(100),
     fkEmpresa int,
     FOREIGN KEY (fkEmpresa) REFERENCES empresa(idEmpresa)
 );

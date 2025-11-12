@@ -4,7 +4,7 @@
 - `Atualize todas as variaveis de ambiente AWS do .env com suas credenciais todas vez que logar em sua EC2`
 
 ## Config EC2
-- `Crie uma EC2 com o t3 medium`
+- `Crie uma EC2 com o t2lager`
 - `Habilite o IAM de sua EC2`
 - `Atulize os grupos e segurança para a utilização de portas públicas`
 
