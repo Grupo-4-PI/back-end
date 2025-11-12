@@ -80,12 +80,12 @@ public class DBConnection {
         }
 
         String sql_insert = """
-        INSERT INTO reclamacoes (
-            uf, cidade, data_abertura, data_hora_resposta, data_finalizacao,
-            tempo_resposta, nome_fantasia, assunto, grupo_problema, problema,
-            forma_contrato, respondida, situacao, avaliacao, nota_consumidor, codigo_anac, fkEmpresa
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """;
+                INSERT INTO reclamacoes (
+                    uf, cidade, data_abertura, data_hora_resposta, data_finalizacao,
+                    tempo_resposta, nome_fantasia, assunto, grupo_problema, problema,
+                    forma_contrato, respondida, situacao, avaliacao, nota_consumidor, codigo_anac, fkEmpresa
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
 
         try {
             jdbc_template.execute((Connection con) -> {
@@ -137,7 +137,8 @@ public class DBConnection {
                     Log.erro("Erro ao executar lote de inserção. Iniciando rollback...");
                     con.rollback();
                     Log.erro("Rollback concluído. Erro: " + e.getMessage());
-                    throw new DataAccessException("Erro no batch", e) {};
+                    throw new DataAccessException("Erro no batch", e) {
+                    };
                 } finally {
                     con.setAutoCommit(true);
                 }
@@ -151,23 +152,23 @@ public class DBConnection {
         }
     }
 
-    public Boolean truncateDadosReclamacoe(){
+    public Boolean truncateDadosReclamacoe() {
         try {
             String sql = "Truncate reclamacoes;";
             this.jdbc_template.update(sql);
             Log.info("Tabela 'reclamacoes' foi limpa (TRUNCATE).");
             return true;
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.erro("Erro ao limpar dados de reclamações: " + e.getMessage());
             return false;
         }
     }
 
-    public void insertLog(String log, String status){
+    public void insertLog(String log, String status) {
         try {
             String sql = "INSERT log (logMensagem, status) VALUES (?, ?)";
             this.jdbc_template.update(sql, log, status);
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.erro("[ERRO] [Erro ao inserir log no banco: '" + e.getMessage() + "']");
         }
     }

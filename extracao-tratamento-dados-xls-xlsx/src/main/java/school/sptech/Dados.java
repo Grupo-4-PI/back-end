@@ -184,9 +184,9 @@ public class Dados {
                 "nomeFantasia='" + nome_fantasia + " || " +
                 "assunto='" + assunto + " || " +
                 "grupoProblema='" + grupo_problema + " || " +
-                "problema='" + problema +" || " +
+                "problema='" + problema + " || " +
                 "formaContrato='" + forma_contrato + " || " +
-                "respondida='" + respondida +" || " +
+                "respondida='" + respondida + " || " +
                 "situacao='" + situacao + " || " +
                 "avaliacao='" + avaliacao + " || " +
                 "notaConsumidor=" + nota_consumidor + " || " +
