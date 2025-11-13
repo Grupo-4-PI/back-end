@@ -7,10 +7,13 @@ import school.sptech.LogsExtracao.Log;
 
 import java.io.InputStream;
 import java.util.Optional;
+import java.util.TimeZone;
 
 public class Main {
 
     public static void main(String[] args) {
+
+        TimeZone.setDefault(TimeZone.getTimeZone("America/Sao_Paulo"));
 
         Integer novo_limite_mb = 150 * 1024 * 1024;
         IOUtils.setByteArrayMaxOverride(novo_limite_mb);
