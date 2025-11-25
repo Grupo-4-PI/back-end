@@ -16,7 +16,7 @@ CREATE TABLE TipoAcesso (
     fkEmpresa INT NULL,
     nome VARCHAR(100) NOT NULL,
     ativo TINYINT NOT NULL DEFAULT 1,
-    FOREIGN KEY (fkEmpresa) REFERENCES Empresa(idEmpresa)
+    FOREIGN KEY (fkEmpresa) REFERENCES empresa(idEmpresa)
 );
 
 CREATE TABLE Tela (
