@@ -199,7 +199,7 @@ INSERT INTO Tela (nome, rota) VALUES
 ('Benchmark', '/benchmark'),
 ('Gestão de Usuários', '/gestaoUsuarios');
 
-INSERT INTO TipoAcesso (idEmpresa, nome) VALUES
+INSERT INTO TipoAcesso (fkEmpresa, nome) VALUES
 (2, 'Executivo'),
 (2, 'Analista Global');
 
