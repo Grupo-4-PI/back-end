@@ -4,7 +4,6 @@ create database airwise;
 
 use airwise;
 
-
 CREATE TABLE empresa (
     idEmpresa INT AUTO_INCREMENT PRIMARY KEY,
     cnpj CHAR(14) NOT NULL,
@@ -12,10 +11,26 @@ CREATE TABLE empresa (
     razaoSocial VARCHAR(100) NOT NULL
 );
 
-
 CREATE TABLE TipoAcesso (
-    idTipoAcesso INT PRIMARY KEY AUTO_INCREMENT,
-    nome VARCHAR(45) NOT NULL UNIQUE
+    idTipoAcesso INT AUTO_INCREMENT PRIMARY KEY,
+    fkEmpresa INT NULL,
+    nome VARCHAR(100) NOT NULL,
+    ativo TINYINT NOT NULL DEFAULT 1,
+    FOREIGN KEY (fkEmpresa) REFERENCES Empresa(idEmpresa)
+);
+
+CREATE TABLE Tela (
+    idTela INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL UNIQUE,
+    rota VARCHAR(150) NOT NULL UNIQUE
+);
+
+CREATE TABLE TipoAcessoTela (
+    idTipoAcesso INT NOT NULL,
+    idTela INT NOT NULL,
+    PRIMARY KEY (idTipoAcesso, idTela),
+    FOREIGN KEY (idTipoAcesso) REFERENCES TipoAcesso(idTipoAcesso),
+    FOREIGN KEY (idTela) REFERENCES Tela(idTela)
 );
 
 CREATE TABLE usuario (
@@ -26,6 +41,7 @@ CREATE TABLE usuario (
     email VARCHAR(45) NOT NULL,
     senha VARCHAR(45) NOT NULL,
     cargo VARCHAR(45),
+    status TINYINT NOT NULL DEFAULT 1,
     fkTipoAcesso INT,
     FOREIGN KEY (fkEmpresa) REFERENCES empresa(idEmpresa),
     FOREIGN KEY (fkTipoAcesso) REFERENCES TipoAcesso(idTipoAcesso)
@@ -176,7 +192,33 @@ INSERT INTO chaveDeAcesso (fkEmpresa, status, codigo, dataCriacao) VALUES
 (2, 0, 'SKY-HIGH-KEY-2024-INACTIVE', '2024-11-20'),
 (3, 1, 'INFRAAIR-KEY-2025-VALID', '2025-03-10');
 
-select * from usuario;
+INSERT INTO Tela (nome, rota) VALUES
+('Visao Geral', '/visaoGeral'),
+('Reclamações', '/reclamacoes'),
+('Desempenho Interno', '/desempenhoInterno'),
+('Benchmark', '/benchmark'),
+('Gestão de Usuários', '/gestaoUsuarios');
+
+INSERT INTO TipoAcesso (idEmpresa, nome) VALUES
+(2, 'Executivo'),
+(2, 'Analista Global');
 
 
-select * from usuario where senha = md5('senhaForte123');
+INSERT INTO TipoAcessoTela (idTipoAcesso, idTela) VALUES
+(1, 1),
+(1, 2),
+(1, 3),
+(1, 4),
+(1, 5);
+
+INSERT INTO TipoAcessoTela (idTipoAcesso, idTela) VALUES
+(2, 3),
+(2, 4),
+(3, 1),
+(3, 2);
+
+INSERT INTO TipoAcessoTela (idTipoAcesso, idTela) VALUES
+(4, 1),
+(4, 2),
+(4, 3),
+(4, 4);
