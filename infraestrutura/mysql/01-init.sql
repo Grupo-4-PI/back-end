@@ -1,12 +1,36 @@
-CREATE DATABASE IF NOT EXISTS db_airwise;
+-- drop database airwise;
 
-USE db_airwise;
+create database airwise;
+
+use airwise;
 
 CREATE TABLE empresa (
     idEmpresa INT AUTO_INCREMENT PRIMARY KEY,
     cnpj CHAR(14) NOT NULL,
     nomeFantasia VARCHAR(45) NOT NULL,
     razaoSocial VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE TipoAcesso (
+    idTipoAcesso INT AUTO_INCREMENT PRIMARY KEY,
+    fkEmpresa INT NULL,
+    nome VARCHAR(100) NOT NULL,
+    ativo TINYINT NOT NULL DEFAULT 1,
+    FOREIGN KEY (fkEmpresa) REFERENCES Empresa(idEmpresa)
+);
+
+CREATE TABLE Tela (
+    idTela INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL UNIQUE,
+    rota VARCHAR(150) NOT NULL UNIQUE
+);
+
+CREATE TABLE TipoAcessoTela (
+    idTipoAcesso INT NOT NULL,
+    idTela INT NOT NULL,
+    PRIMARY KEY (idTipoAcesso, idTela),
+    FOREIGN KEY (idTipoAcesso) REFERENCES TipoAcesso(idTipoAcesso),
+    FOREIGN KEY (idTela) REFERENCES Tela(idTela)
 );
 
 CREATE TABLE usuario (
@@ -17,7 +41,10 @@ CREATE TABLE usuario (
     email VARCHAR(45) NOT NULL,
     senha VARCHAR(45) NOT NULL,
     cargo VARCHAR(45),
-    FOREIGN KEY (fkEmpresa) REFERENCES empresa(idEmpresa)
+    status TINYINT NOT NULL DEFAULT 1,
+    fkTipoAcesso INT,
+    FOREIGN KEY (fkEmpresa) REFERENCES empresa(idEmpresa),
+    FOREIGN KEY (fkTipoAcesso) REFERENCES TipoAcesso(idTipoAcesso)
 );
 
 CREATE TABLE endereco (
@@ -43,7 +70,7 @@ CREATE TABLE chaveDeAcesso (
 );
 
 CREATE TABLE reclamacoes (
-    id INT PRIMARY KEY AUTO_INCREMENT, 
+    id INT PRIMARY KEY AUTO_INCREMENT,
     uf VARCHAR(2),
     cidade VARCHAR(255),
     data_abertura DATE,
@@ -71,6 +98,7 @@ CREATE TABLE log (
     status VARCHAR(7),
     CONSTRAINT chk_status CHECK (status IN ('sucesso', 'erro'))
 );
+
 
 INSERT INTO empresa (cnpj, nomeFantasia, razaoSocial) VALUES
 ('02012862000160','latam airlines (tam)','tam linhas aereas s/a.'),
@@ -116,16 +144,81 @@ INSERT INTO empresa (cnpj, nomeFantasia, razaoSocial) VALUES
 ('01526415000166','united airlines','united airlines, inc.'),
 ('48567890000151','virgin atlantic airways','virgin atlantic airways limited');
 
-INSERT INTO usuario (fkEmpresa, nome, cpf, email, senha, cargo) VALUES
-(1, 'Ana Silva', '12345678901', 'ana.silva@airwise.com', md5('senhaForte123'), 'Gerente de TI'),
-(1, 'Joao Ribeiro', '1235367890', 'joao.ribeiro@airwise.com', md5('AOlcakcsnoj234243'), 'Analista');
+
+-- 10 INSERTS para LATAM Airlines (TAM) - fkEmpresa = 1
+INSERT INTO reclamacoes (uf, cidade, data_abertura, data_hora_resposta, data_finalizacao, tempo_resposta, nome_fantasia, assunto, grupo_problema, problema, forma_contrato, respondida, situacao, avaliacao, nota_consumidor, codigo_anac, fkEmpresa) VALUES
+('SP', 'São Paulo', '2025-01-05', '2025-01-06 10:00:00', '2025-01-08', 48, 'latam airlines (tam)', 'Atraso de voo', 'Transporte Aéreo', 'Voo atrasou 5 horas sem justificativa adequada.', 'Site', 'Sim', 'Resolvida', 'Boa', 8, 'ANAC-001', 1),
+('RJ', 'Rio de Janeiro', '2025-02-10', '2025-02-11 09:45:00', '2025-02-13', 48, 'latam airlines (tam)', 'Extravio de bagagem', 'Bagagem', 'Bagagem foi entregue após 3 dias, com avarias.', 'Aplicativo', 'Sim', 'Resolvida', 'Regular', 6, 'ANAC-002', 1),
+('MG', 'Belo Horizonte', '2025-03-01', '2025-03-02 08:30:00', '2025-03-05', 72, 'latam airlines (tam)', 'Cancelamento de voo', 'Atendimento', 'Voo cancelado e sem reacomodação imediata.', 'Telefone', 'Sim', 'Resolvida', 'Ruim', 4, 'ANAC-003', 1),
+('RS', 'Porto Alegre', '2025-03-20', '2025-03-21 14:00:00', '2025-03-24', 72, 'latam airlines (tam)', 'Reembolso atrasado', 'Financeiro', 'Cliente aguarda reembolso há mais de 30 dias.', 'Online', 'Não', 'Em análise', 'Ruim', 3, 'ANAC-004', 1),
+('BA', 'Salvador', '2025-04-02', '2025-04-03 13:30:00', '2025-04-05', 48, 'latam airlines (tam)', 'Troca de assento', 'Serviço de bordo', 'Assento alterado sem aviso prévio.', 'Aplicativo', 'Sim', 'Resolvida', 'Boa', 8, 'ANAC-005', 1),
+('DF', 'Brasília', '2025-05-08', '2025-05-09 11:00:00', '2025-05-11', 48, 'latam airlines (tam)', 'Erro no check-in', 'Sistema', 'Falha no sistema impediu o check-in antecipado.', 'Site', 'Sim', 'Resolvida', 'Regular', 7, 'ANAC-006', 1),
+('PE', 'Recife', '2025-06-10', '2025-06-11 15:00:00', '2025-06-14', 72, 'latam airlines (tam)', 'Cobrança indevida', 'Financeiro', 'Cobrança duplicada em passagem aérea.', 'Aplicativo', 'Sim', 'Resolvida', 'Boa', 9, 'ANAC-007', 1),
+('CE', 'Fortaleza', '2025-07-15', '2025-07-16 09:00:00', '2025-07-18', 48, 'latam airlines (tam)', 'Bagagem danificada', 'Bagagem', 'Mala entregue com rodinhas quebradas.', 'Site', 'Sim', 'Resolvida', 'Boa', 8, 'ANAC-008', 1),
+('PR', 'Curitiba', '2025-08-05', '2025-08-06 10:45:00', '2025-08-08', 48, 'latam airlines (tam)', 'Problema no embarque', 'Atendimento', 'Fila desorganizada e atraso no embarque.', 'Online', 'Sim', 'Resolvida', 'Boa', 7, 'ANAC-009', 1),
+('SC', 'Florianópolis', '2025-09-12', '2025-09-13 14:30:00', '2025-09-15', 48, 'latam airlines (tam)', 'Mudança de horário', 'Transporte Aéreo', 'Voo remarcado sem notificação.', 'Telefone', 'Sim', 'Resolvida', 'Regular', 6, 'ANAC-010', 1);
+
+-- 10 INSERTS para outras empresas
+INSERT INTO reclamacoes (uf, cidade, data_abertura, data_hora_resposta, data_finalizacao, tempo_resposta, nome_fantasia, assunto, grupo_problema, problema, forma_contrato, respondida, situacao, avaliacao, nota_consumidor, codigo_anac, fkEmpresa) VALUES
+('SP', 'Campinas', '2025-01-09', '2025-01-10 10:00:00', '2025-01-12', 48, 'gol linhas aereas', 'Atraso de voo', 'Transporte Aéreo', 'Atraso de 3 horas sem justificativa.', 'Online', 'Sim', 'Resolvida', 'Boa', 7, 'ANAC-011', 2),
+('RJ', 'Niterói', '2025-02-15', '2025-02-16 09:45:00', '2025-02-18', 48, 'azul linhas aereas', 'Bagagem extraviada', 'Bagagem', 'Bagagem devolvida 2 dias depois.', 'Aplicativo', 'Sim', 'Resolvida', 'Boa', 8, 'ANAC-012', 3),
+('BA', 'Feira de Santana', '2025-03-05', '2025-03-06 11:00:00', '2025-03-09', 72, 'gol linhas aereas', 'Cancelamento de voo', 'Transporte Aéreo', 'Cancelamento sem aviso prévio.', 'Site', 'Sim', 'Resolvida', 'Regular', 6, 'ANAC-013', 2),
+('RS', 'Caxias do Sul', '2025-04-12', '2025-04-13 14:00:00', '2025-04-15', 48, 'azul linhas aereas', 'Problema no aplicativo', 'Sistema', 'App não permitiu marcação de assento.', 'Aplicativo', 'Sim', 'Resolvida', 'Boa', 9, 'ANAC-014', 3),
+('DF', 'Brasília', '2025-05-17', '2025-05-18 12:30:00', '2025-05-20', 48, 'voepass linhas aereas', 'Atraso na decolagem', 'Transporte Aéreo', 'Demora de 2h no embarque por manutenção.', 'Online', 'Sim', 'Resolvida', 'Boa', 8, 'ANAC-015', 4),
+('PE', 'Olinda', '2025-06-03', '2025-06-04 08:20:00', '2025-06-06', 48, 'gol linhas aereas', 'Reembolso não recebido', 'Financeiro', 'Cliente aguarda reembolso há 25 dias.', 'Site', 'Não', 'Em análise', 'Ruim', 3, 'ANAC-016', 2),
+('CE', 'Juazeiro do Norte', '2025-07-08', '2025-07-09 09:10:00', '2025-07-11', 48, 'azul linhas aereas', 'Cobrança duplicada', 'Financeiro', 'Cobrança feita duas vezes pela mesma passagem.', 'Aplicativo', 'Sim', 'Resolvida', 'Boa', 9, 'ANAC-017', 3),
+('PR', 'Londrina', '2025-08-01', '2025-08-02 10:00:00', '2025-08-04', 48, 'voepass linhas aereas', 'Assento trocado', 'Serviço de bordo', 'Cliente pagou por assento conforto e foi trocado.', 'Site', 'Sim', 'Resolvida', 'Regular', 6, 'ANAC-018', 4),
+('MG', 'Uberlândia', '2025-09-20', '2025-09-21 11:00:00', '2025-09-23', 48, 'gol linhas aereas', 'Problema no check-in', 'Sistema', 'Erro de sistema no site impediu check-in.', 'Online', 'Sim', 'Resolvida', 'Boa', 8, 'ANAC-019', 2),
+('SC', 'Joinville', '2025-10-05', '2025-10-06 14:30:00', '2025-10-08', 48, 'azul linhas aereas', 'Cancelamento sem aviso', 'Atendimento', 'Cliente não foi notificado sobre o cancelamento.', 'Aplicativo', 'Sim', 'Resolvida', 'Regular', 6, 'ANAC-020', 3);
+
+INSERT INTO TipoAcesso (nome) VALUES
+('ADM'),
+('Marketing'),
+('Atendimento'),
+('Hibrido');
+
+
+INSERT INTO usuario (fkEmpresa, nome, cpf, email, senha, cargo, fkTipoAcesso) VALUES
+(1, 'Ana Silva', '12345678901', 'ana.silva@airwise.com', md5('senhaForte123'), 'Gerente de TI', 1),
+(1, 'Joao Ribeiro', '1235367890', 'joao.ribeiro@airwise.com', md5('AOlcakcsnoj234243'), 'Analista', 2);
 
 INSERT INTO endereco (fkEmpresa, cep, logradouro, numero, bairro, cidade, uf) VALUES
 (1, '01311-000', 'Avenida Paulista', 1578, 'Bela Vista', 'São Paulo', 'SP'),
-(2, '20090-003', 'Avenida Rio Branco', 1, 'Centro', 'Rio de Janeiro', 'RJ');
+(2, '20090-003', 'Avenida Rio Branco', 1, 'Centro', 'Rio de Janeiro', 'RJ'),
+(3, '70340-906', 'SBN Quadra 2', 10, 'Asa Norte', 'Brasília', 'DF');
 
 INSERT INTO chaveDeAcesso (fkEmpresa, status, codigo, dataCriacao) VALUES
-(1, 0, 'AERO-TECH-KEY-2026-ATIVO', '2025-01-15'),
-(1, 0, 'AERO-TECH-KEY-2027-ATIVO', '2025-01-15'),
-(1, 0, 'AERO-TECH-KEY-2028-ATIVO', '2025-01-15'),
-(2, 0, 'SKY-HIGH-KEY-2024-ATIVO', '2024-11-20');
+(1, 1, 'AERO-TECH-KEY-2025-ACTIVE', '2025-01-15'),
+(2, 0, 'SKY-HIGH-KEY-2024-INACTIVE', '2024-11-20'),
+(3, 1, 'INFRAAIR-KEY-2025-VALID', '2025-03-10');
+
+INSERT INTO Tela (nome, rota) VALUES
+('Visao Geral', '/visaoGeral'),
+('Reclamações', '/reclamacoes'),
+('Desempenho Interno', '/desempenhoInterno'),
+('Benchmark', '/benchmark'),
+('Gestão de Usuários', '/gestaoUsuarios');
+
+INSERT INTO TipoAcesso (idEmpresa, nome) VALUES
+(2, 'Executivo'),
+(2, 'Analista Global');
+
+
+INSERT INTO TipoAcessoTela (idTipoAcesso, idTela) VALUES
+(1, 1),
+(1, 2),
+(1, 3),
+(1, 4),
+(1, 5);
+
+INSERT INTO TipoAcessoTela (idTipoAcesso, idTela) VALUES
+(2, 3),
+(2, 4),
+(3, 1),
+(3, 2);
+
+INSERT INTO TipoAcessoTela (idTipoAcesso, idTela) VALUES
+(4, 1),
+(4, 2),
+(4, 3),
+(4, 4);
