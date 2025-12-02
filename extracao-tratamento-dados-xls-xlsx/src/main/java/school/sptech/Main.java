@@ -26,6 +26,9 @@ public class Main {
         } catch (Exception e) {
             System.err.println("ERRO CRÍTICO: Não foi possível conectar ao banco de dados.");
             Log.erro("Não foi possível conectar ao banco de dados: " + e.getMessage());
+
+            Slack.enviarMensagem("[ERRO CRÍTICO] Não foi possível conectar ao banco de dados: " + e.getMessage());
+
             e.printStackTrace();
             return;
         }
@@ -34,11 +37,16 @@ public class Main {
             System.err.println("ERRO CRÍTICO: Variável de ambiente 'S3_BUCKET_NAME' não definida.");
             Log.erro("Variável de ambiente 'S3_BUCKET_NAME' não definida.");
             conexao_banco.insertLog("[ERRO] [Variável de ambiente 'S3_BUCKET_NAME' não definida]", "erro");
+
+            Slack.enviarMensagem("[ERRO CRÍTICO] Variável de ambiente 'S3_BUCKET_NAME' não definida.");
+
             return;
         }
 
         Log.info("Iniciando aplicação...");
         Log.info("Usando bucket S3: " + nome_bucket_s3);
+
+        Slack.enviarMensagem("[INFO] Iniciando aplicação... Usando bucket S3: " + nome_bucket_s3);
 
         S3Service servico_s3 = new S3Service();
 
@@ -53,11 +61,16 @@ public class Main {
                 String msg_erro = "Nenhum arquivo .xlsx encontrado no bucket '" + nome_bucket_s3 + "' para processar.";
                 Log.erro(msg_erro);
                 conexao_banco.insertLog(msg_erro, "erro");
+
+                Slack.enviarMensagem("[ERRO] " + msg_erro);
+
                 return;
             }
 
             String chave_arquivo = chave_arquivo_recente_opt.get();
             Log.info("Arquivo mais recente encontrado: '" + chave_arquivo + "'. Iniciando download e processamento.");
+
+            Slack.enviarMensagem("[INFO] Arquivo mais recente encontrado: '" + chave_arquivo + "'. Iniciando download e processamento.");
 
             try (InputStream stream_planilha = servico_s3.getFileAsInputStream(nome_bucket_s3, chave_arquivo)) {
                 Log.info("Download concluído. Iniciando extração, tratamento e inserção dos dados...");
@@ -73,18 +86,29 @@ public class Main {
             Log.erro(msg_erro);
             re.printStackTrace();
             conexao_banco.insertLog("[ERRO] [" + msg_erro + "]", "erro");
+
+            Slack.enviarMensagem("[ERRO] " + msg_erro);
+
         } catch (Exception e) {
             String msg_erro = "ERRO CRÍTICO inesperado na execução principal: " + e.getMessage();
             Log.erro(msg_erro);
             e.printStackTrace();
             conexao_banco.insertLog("[ERRO] [" + msg_erro + "]", "erro");
+
+            Slack.enviarMensagem("[ERRO CRÍTICO] " + msg_erro);
+
         } finally {
             if (sucesso) {
                 Log.sucesso("\n--- PROCESSO CONCLUÍDO COM SUCESSO ---");
                 conexao_banco.insertLog("[SUCESSO] [Aplicação finalizada com sucesso]", "sucesso");
+
+                Slack.enviarMensagem("[SUCESSO] PROCESSO CONCLUÍDO COM SUCESSO");
+
             } else {
                 Log.erro("\n--- O PROCESSO FALHOU OU TERMINOU SEM PROCESSAR DADOS ---");
                 conexao_banco.insertLog("[ERRO] [Aplicação falhou ou terminou sem processar dados]", "erro");
+
+                Slack.enviarMensagem("[ERRO] O PROCESSO FALHOU OU TERMINOU SEM PROCESSAR DADOS");
             }
             Log.info("Aplicação finalizada.");
         }

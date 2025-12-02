@@ -5,7 +5,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import school.sptech.Dados;
 import school.sptech.LogsExtracao.Log;
-import school.sptech.TratamentoDados; // <<< 1. IMPORTAR A CLASSE
+import school.sptech.TratamentoDados;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

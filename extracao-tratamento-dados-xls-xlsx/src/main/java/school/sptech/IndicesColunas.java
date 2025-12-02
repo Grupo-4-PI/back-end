@@ -1,6 +1,7 @@
 package school.sptech;
 
 public enum IndicesColunas {
+
     UF(2),
     CIDADE(3),
     DATAABERTURA(6),

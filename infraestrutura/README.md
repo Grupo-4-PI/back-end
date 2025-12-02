@@ -11,7 +11,7 @@
 ## ** Faca as altercoes no comando abaixo para que tudo funcione **
 
 ## Execute este comando para clonar este arquivo para sua EC2
-- `scp -i "C:\caminho\par\de\chaves\diretorio_que_seu_par_de_chaves_esta\par_de_chaves.pem" -r C:\caminho\arquivo\docker\compose\AirWise\back-end\infraestrutura ubuntu@ip_publico_ec2:~/`
+- `scp -i "" -r  ubuntu@54.145.214.219:~/`
 
 ## Dê a permissão para executar o arquivo
 - `chmod +x infraestrutura/setup.sh`

@@ -10,4 +10,4 @@ RUN curl -L -o app.jar ${JAR_URL}
 
 EXPOSE 8080
 
-CMD [ "java", "-Xmx4g", "-jar", "app.jar" ]
+CMD [ "java", "-Xmx3g", "-jar", "app.jar" ]
