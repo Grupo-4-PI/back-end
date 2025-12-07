@@ -99,6 +99,21 @@ CREATE TABLE log (
     CONSTRAINT chk_status CHECK (status IN ('sucesso', 'erro'))
 );
 
+CREATE TABLE suporte (
+    idSuporte INT PRIMARY KEY AUTO_INCREMENT,
+    titulo VARCHAR(100) NOT NULL,
+    descricao TEXT NOT NULL,
+    categoria VARCHAR(45) NOT NULL,
+    impacto VARCHAR(20) NOT NULL,
+    status VARCHAR(20) DEFAULT 'Aberto',
+    data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    fkUsuario INT,
+    FOREIGN KEY (fkUsuario) REFERENCES usuario(idUsuario),
+    CONSTRAINT chk_categoria CHECK (categoria IN ('Login', 'Dashboard', 'Perfil')),
+    CONSTRAINT chk_impacto CHECK (impacto IN ('Baixo', 'Médio', 'Alto')),
+    CONSTRAINT chk_status CHECK (status IN ('Aberto', 'Em análise', 'Concluído'))
+);
+
 
 INSERT INTO empresa (cnpj, nomeFantasia, razaoSocial) VALUES
 ('02012862000160','latam airlines (tam)','tam linhas aereas s/a.'),
