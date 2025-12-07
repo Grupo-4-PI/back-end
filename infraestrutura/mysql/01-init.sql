@@ -1,8 +1,8 @@
 -- drop database airwise;
 
-create database airwise;
+create database if not exists db_airwise;
 
-use airwise;
+use db_airwise;
 
 CREATE TABLE empresa (
     idEmpresa INT AUTO_INCREMENT PRIMARY KEY,
@@ -16,7 +16,7 @@ CREATE TABLE tipoAcesso (
     fkEmpresa INT NULL,
     nome VARCHAR(100) NOT NULL,
     ativo TINYINT NOT NULL DEFAULT 1,
-    FOREIGN KEY (fkEmpresa) REFERENCES Empresa(idEmpresa)
+    FOREIGN KEY (fkEmpresa) REFERENCES empresa(idEmpresa)
 );
 
 CREATE TABLE tela (
@@ -29,8 +29,8 @@ CREATE TABLE tipoAcessoTela (
     idTipoAcesso INT NOT NULL,
     idTela INT NOT NULL,
     PRIMARY KEY (idTipoAcesso, idTela),
-    FOREIGN KEY (idTipoAcesso) REFERENCES TipoAcesso(idTipoAcesso),
-    FOREIGN KEY (idTela) REFERENCES Tela(idTela)
+    FOREIGN KEY (idTipoAcesso) REFERENCES tipoAcesso(idTipoAcesso),
+    FOREIGN KEY (idTela) REFERENCES tela(idTela)
 );
 
 CREATE TABLE usuario (
@@ -44,7 +44,7 @@ CREATE TABLE usuario (
     status TINYINT NOT NULL DEFAULT 1,
     fkTipoAcesso INT,
     FOREIGN KEY (fkEmpresa) REFERENCES empresa(idEmpresa),
-    FOREIGN KEY (fkTipoAcesso) REFERENCES TipoAcesso(idTipoAcesso)
+    FOREIGN KEY (fkTipoAcesso) REFERENCES tipoAcesso(idTipoAcesso)
 );
 
 CREATE TABLE endereco (
@@ -97,6 +97,21 @@ CREATE TABLE log (
     DataHora DATETIME DEFAULT CURRENT_TIMESTAMP,
     status VARCHAR(7),
     CONSTRAINT chk_status CHECK (status IN ('sucesso', 'erro'))
+);
+
+CREATE TABLE suporte (
+    idSuporte INT PRIMARY KEY AUTO_INCREMENT,
+    titulo VARCHAR(100) NOT NULL,
+    descricao TEXT NOT NULL,
+    categoria VARCHAR(45) NOT NULL,
+    impacto VARCHAR(20) NOT NULL,
+    status VARCHAR(20) DEFAULT 'Aberto',
+    data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    fkUsuario INT,
+    FOREIGN KEY (fkUsuario) REFERENCES usuario(idUsuario),
+    CONSTRAINT chk_categoria CHECK (categoria IN ('Login', 'Dashboard', 'Perfil')),
+    CONSTRAINT chk_impacto CHECK (impacto IN ('Baixo', 'Médio', 'Alto')),
+    CONSTRAINT chk_status CHECK (status IN ('Aberto', 'Em análise', 'Concluído'))
 );
 
 
