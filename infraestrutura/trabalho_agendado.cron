@@ -1,1 +1,1 @@
-* * * * * cd /home/ubuntu/infraestrutura && /usr/bin/sudo /usr/bin/docker compose -f /home/ubuntu/infraestrutura/docker-compose.yml run --rm jar >> /var/log/processar_planilha.log 2>&1
+0 */2 * * * cd /home/ubuntu/infraestrutura && /usr/bin/sudo /usr/bin/docker compose -f /home/ubuntu/infraestrutura/docker-compose.yml run --rm jar >> /var/log/processar_planilha.log 2>&1
