@@ -108,10 +108,10 @@ CREATE TABLE suporte (
     status VARCHAR(20) DEFAULT 'Aberto',
     data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
     fkUsuario INT,
-    FOREIGN KEY (fkUsuario) REFERENCES usuario(idUsuario),
-    CONSTRAINT chk_categoria CHECK (categoria IN ('Login', 'Dashboard', 'Perfil')),
-    CONSTRAINT chk_impacto CHECK (impacto IN ('Baixo', 'Médio', 'Alto')),
-    CONSTRAINT chk_status CHECK (status IN ('Aberto', 'Em análise', 'Concluído'))
+    CONSTRAINT fk_suporte_usuario FOREIGN KEY (fkUsuario) REFERENCES usuario(idUsuario),
+    CONSTRAINT chk_suporte_categoria CHECK (categoria IN ('Login', 'Dashboard', 'Perfil')),
+    CONSTRAINT chk_suporte_impacto CHECK (impacto IN ('Baixo', 'Medio', 'Alto')),
+    CONSTRAINT chk_suporte_status CHECK (status IN ('Aberto', 'Em análise', 'Concluído'))
 );
 
 
